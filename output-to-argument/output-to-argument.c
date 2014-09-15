@@ -1,16 +1,13 @@
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
+#include <stdlib.h>
 
 int main(int argc, char ** argv) {
-  if (argc < 3) {
-    fprintf(stderr, "Usage: %s PROG ARG [ARG...]\n", argv[0]);
-    return 1;
-	}
-
-  for (char ** argv_iter = argv + 2; *argv_iter; ++argv_iter) {
+  for (char ** argv_iter = argv + 1; *argv_iter; ++argv_iter) {
     char * arg = *argv_iter;
     switch (arg[0]) {
       /* Handle escapes */
@@ -24,15 +21,16 @@ int main(int argc, char ** argv) {
         break;
       case '@':
         *argv_iter = getenv(arg + 1);
-        if (!*argv_iter) {
-          fprintf(stderr, "Argument %s not found in the environment, is it an output?\n", arg + 1);
-          return 1;
-        }
         break;
     }
   }
 
-  execvp(argv[1], argv + 2);
+  if (setenv("builder", argv[1], 1) == -1) {
+    perror("Setting $builder");
+    return 1;
+  }
+
+  execv(argv[1], argv + 1);
   fprintf(stderr, "Executing %s: %s", argv[1], strerror(errno));
   return 1;
 }

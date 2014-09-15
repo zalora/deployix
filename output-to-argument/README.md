@@ -7,11 +7,12 @@ output. To replace an argument with the output, precede the output name with
 the `@` character. For example:
 
 ```nix
-output-to-argument {
+output-to-argument (derivation {
   name = "foo.o";
-  args = [ "${pkgs.gcc}/bin/gcc" "gcc" "-c" ./foo.c "-o" "@out" ];
+  builder = "${pkgs.gcc}/bin/gcc";
+  args = [ "-c" ./foo.c "-o" "@out" ];
   system = builtins.currentSystem;
-}
+})
 ```
 
 Will result in a derivation that compiles `foo.c` into an output named `foo.o`.
