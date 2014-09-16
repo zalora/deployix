@@ -3,14 +3,16 @@
 }:
 
 rec {
-  inherit pkgs;
-
   output-to-argument =
     import ./output-to-argument { inherit (pkgs) runCommand; };
 
-  run-in-userns = import ./run-in-userns {
+  compile-c = import ./compile-c {
     inherit output-to-argument system;
     inherit (pkgs) coreutils;
     cc = "${pkgs.stdenv.gcc}/bin/gcc";
+  };
+
+  run-in-userns = import ./run-in-userns {
+    inherit compile-c;
   };
 }
