@@ -11,12 +11,4 @@ rec {
     inherit (pkgs) coreutils;
     cc = "${pkgs.stdenv.gcc}/bin/gcc";
   };
-
-  run-in-userns = import ./run-in-userns {
-    inherit compile-c;
-  };
-
-  run-in-mountns = import ./run-in-mountns {
-    inherit run-in-userns compile-c;
-  };
 }
