@@ -15,4 +15,8 @@ rec {
   run-in-userns = import ./run-in-userns {
     inherit compile-c;
   };
+
+  run-in-mountns = import ./run-in-mountns {
+    inherit run-in-userns compile-c;
+  };
 }
