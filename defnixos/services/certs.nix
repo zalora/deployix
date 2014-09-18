@@ -34,12 +34,14 @@ let
   '';
 in
 
-{ service-name
-, user ? service-name
+# A service to create a cert/keypair for another service
+
+{ service-name        # The name of the service using the cert
+, user ? service-name # The user who needs access to the cert
 }:
 
 {
-  description = "Generate x509 csr/key pair for ${service-name}";
+  description = "Generate x509 cert/key pair for ${service-name}";
 
   start = [ script service-name user ];
 
