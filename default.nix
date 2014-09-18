@@ -11,4 +11,8 @@ rec {
     inherit (pkgs) coreutils;
     cc = "${pkgs.stdenv.gcc}/bin/gcc";
   };
+
+  wait-for-file = import ./wait-for-file {
+    inherit compile-c;
+  };
 }
