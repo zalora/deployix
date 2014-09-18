@@ -12,7 +12,7 @@ rec {
     cc = "${pkgs.stdenv.gcc}/bin/gcc";
   };
 
-  wait-for-file = import ./wait-for-file {
-    inherit compile-c;
-  };
+  wait-for-file = import ./wait-for-file { inherit compile-c; };
+
+  defnixos = import ./defnixos pkgs.lib;
 }
