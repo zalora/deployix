@@ -31,7 +31,7 @@ int main(int argc, char ** argv) {
     err(1, "Watching %s", dir);
 
   struct inotify_event *ev;
-  size_t bufsz = sizeof(struct inotify_event) + strlen(file);
+  size_t bufsz = sizeof(struct inotify_event) + strlen(file) + 1;
   while (1) {
     alignas(struct inotify_event) char buffer[bufsz];
     struct inotify_event * ev = (struct inotify_event *) buffer;
