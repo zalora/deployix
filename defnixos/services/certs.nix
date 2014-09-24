@@ -12,6 +12,17 @@ let
   subject =
     "/C=SG/ST=Singapore/O=Zalora/OU=DevOps/CN=$name-$id/emailAddress=it-services@zalora.com";
 
+  conf = builtins.toFile "openssl-req.conf" ''
+    [ req ]
+    req_extensions = v3_ca
+    distinguished_name = req_distinguished_name
+
+    [ req_distinguished_name ]
+
+    [ v3_ca ]
+    subjectAltName = email:copy
+  '';
+
   script = writeScript "generate-x509" ''
     #!${bash}/bin/bash -e
     name=$1
@@ -27,7 +38,7 @@ let
 
       id=`cat /etc/machine-id`
       ${openssl}/bin/openssl req -out ${x509-directory}/$name.csr -new -subj ${subject} \
-        -key ${x509-directory}/$name.pem
+        -key ${x509-directory}/$name.pem -config ${conf}
 
       ${wait-for-file} ${x509-directory}/$name.crt
     fi
