@@ -2,7 +2,6 @@
 , wait-for-file
 , writeScript
 , bash
-, service-types
 }:
 
 let
@@ -45,7 +44,7 @@ let
   '';
 in
 
-# A service to create a cert/keypair for another service
+# An activation to create a cert/keypair for a service
 
 { service-name        # The name of the service using the cert
 , user ? service-name # The user who needs access to the cert
@@ -54,7 +53,5 @@ in
 {
   description = "Generate x509 cert/key pair for ${service-name}";
 
-  start = [ script service-name user ];
-
-  type = service-types.oneshot;
+  run = [ script service-name user ];
 }

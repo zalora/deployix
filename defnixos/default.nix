@@ -3,20 +3,44 @@ lib:
 rec {
   services-dir = ./services;
 
-  # Extend service-to-nixos-systemd's type setting when new
-  # types are supported
-  service-types = {
-    oneshot = 0;
-  };
+  service-to-nixos-module = name: service-config: let
+    # !!! TODO: Actually handle escapes
+    systemd-escape = x: x;
 
-  service-to-nixos-systemd = { description, start, type }: {
-    inherit description;
+    activation-services = builtins.listToAttrs (lib.imap (idx: activation-config: {
+      name = "${name}-activation-${idx}";
 
-    # !!! Should handle escaping
-    serviceConfig.ExecStart = lib.concatStringsSep " " start;
+      value = {
+        inherit (activation-config) description;
 
-    serviceConfig.Type = "oneshot";
+        serviceConfig.ExecStart =
+          lib.concatStringsSep " " (map systemd-escape activation-config.run);
 
-    serviceConfig.RemainAfterExit = type == service-types.oneshot;
-  };
+        serviceConfig.Type = "oneshot";
+
+        serviceConfig.RemainAfterExit = true;
+      };
+    }) (service-config.activations or []));
+
+    config = {
+      systemd.services = activation-services // {
+        ${name} = {
+          inherit (service-config) description;
+
+          requires = [ "${name}-activations.target" ];
+
+          after = [ "${name}-activations.target" ];
+
+          serviceConfig.ExecStart =
+            lib.concatStringsSep " " (map systemd-escape service-config.start);
+        };
+      };
+
+      systemd.targets."${name}-activations" = {
+        requires = builtins.attrNames activation-services;
+
+        after = builtins.attrNames activation-services;
+      };
+    };
+  in { ... }: { inherit config; };
 }
