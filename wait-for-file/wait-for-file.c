@@ -30,6 +30,9 @@ int main(int argc, char ** argv) {
   if (watch == -1)
     err(1, "Watching %s", dir);
 
+  if (access(path, F_OK) == 0)
+    return 0;
+
   struct inotify_event *ev;
   size_t bufsz = sizeof(struct inotify_event) + strlen(file) + 1;
   while (1) {
