@@ -40,6 +40,11 @@ let
         -key ${x509-directory}/$name.pem -config ${conf}
 
       ${wait-for-file} ${x509-directory}/$name.crt
+      umask 0077
+      ${openssl}/bin/openssl pkcs12 -export -out ${x509-directory}/$name.p12
+        -in ${x509-directory}/$name.crt -inkey ${x509-directory}/$name.pem
+      chown $user ${x509-directory}/$name.p12
+      umask $oldmask
     fi
   '';
 in
