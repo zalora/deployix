@@ -40,9 +40,13 @@ let
         -key ${x509-directory}/$name.pem -config ${conf}
 
       ${wait-for-file} ${x509-directory}/$name.crt
+    fi
+    if [ ! -f ${x509-directory}/$name.p12 ]; then
       umask 0077
-      ${openssl}/bin/openssl pkcs12 -export -out ${x509-directory}/$name.p12
-        -in ${x509-directory}/$name.crt -inkey ${x509-directory}/$name.pem
+      ${openssl}/bin/openssl pkcs12 -export -passout pass:ignored \
+        -in ${x509-directory}/$name.crt -inkey ${x509-directory}/$name.pem | \
+        ${openssl}/bin/openssl pkcs12 -out ${x509-directory}/$name.p12 \
+          -passin pass:ignored -nodes
       chown $user ${x509-directory}/$name.p12
       umask $oldmask
     fi

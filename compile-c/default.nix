@@ -1,11 +1,7 @@
-let
-  pkgs = system: import <nixpkgs> { inherit system; };
-  defnix = system: import ../. { inherit system; pkgs = pkgs system; };
-in
-{ output-to-argument ? (defnix system).output-to-argument
-, cc ? "${(pkgs system).stdenv.gcc}/bin/gcc"
-, coreutils ? (pkgs system).coreutils
-, system ? builtins.currentSystem
+{ output-to-argument
+, cc
+, coreutils
+, system
 }:
 
 c: let

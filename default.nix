@@ -1,18 +1,11 @@
-{ pkgs ? import <nixpkgs> { inherit system; }
-, system ? builtins.currentSystem
-}:
+{
+  build-support = {
+    output-to-argument = import ./output-to-argument;
 
-rec {
-  output-to-argument =
-    import ./output-to-argument { inherit (pkgs) runCommand; };
-
-  compile-c = import ./compile-c {
-    inherit output-to-argument system;
-    inherit (pkgs) coreutils;
-    cc = "${pkgs.stdenv.gcc}/bin/gcc";
+    compile-c = import ./compile-c;
   };
 
-  wait-for-file = import ./wait-for-file { inherit compile-c; };
+  wait-for-file = import ./wait-for-file;
 
-  defnixos = import ./defnixos pkgs.lib;
+  defnixos = import ./defnixos;
 }

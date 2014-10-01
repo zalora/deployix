@@ -1,20 +1,20 @@
-lib:
+{
+  services = import ./services;
 
-rec {
-  services-dir = ./services;
+  activations = import ./activations;
 
-  service-to-nixos-module = name: service-config: let
+  service-to-nixos-module = { imap, concatStringsSep, mkForce }: name: service-config: let
     # !!! TODO: Actually handle escapes
     systemd-escape = x: x;
 
-    activation-services = builtins.listToAttrs (lib.imap (idx: activation-config: {
-      name = "${name}-activation-${idx}";
+    activation-services = builtins.listToAttrs (imap (idx: activation-config: {
+      name = "${name}-activation-${toString idx}";
 
       value = {
-        inherit (activation-config) description;
+        description = activation-config.description or "A ${name} activation";
 
         serviceConfig.ExecStart =
-          lib.concatStringsSep " " (map systemd-escape activation-config.run);
+          concatStringsSep " " (map systemd-escape activation-config.run);
 
         serviceConfig.Type = "oneshot";
 
@@ -25,21 +25,30 @@ rec {
     config = {
       systemd.services = activation-services // {
         ${name} = {
-          inherit (service-config) description;
+          description = service-config.description or "${name} service";
 
           requires = [ "${name}-activations.target" ];
 
           after = [ "${name}-activations.target" ];
 
           serviceConfig.ExecStart =
-            lib.concatStringsSep " " (map systemd-escape service-config.start);
+            concatStringsSep " " (map systemd-escape service-config.start);
+
+          environment = mkForce service-config.environment or {};
+
+          wantedBy = [ "multi-user.target" ];
         };
       };
 
-      systemd.targets."${name}-activations" = {
-        requires = builtins.attrNames activation-services;
+      systemd.targets."${name}-activations" = let
+        service-names =
+          map (x: "${x}.service") (builtins.attrNames activation-services);
+      in {
+        description = "Activations for ${name}";
 
-        after = builtins.attrNames activation-services;
+        requires = service-names;
+
+        after = service-names;
       };
     };
   in { ... }: { inherit config; };
