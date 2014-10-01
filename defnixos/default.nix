@@ -3,7 +3,7 @@
 
   activations = import ./activations;
 
-  service-to-nixos-module = { imap, concatStringsSep, mkForce }: name: service-config: let
+  service-to-nixos-config = { imap, concatStringsSep, mkForce }: name: service-config: let
     # !!! TODO: Actually handle escapes
     systemd-escape = x: x;
 
@@ -51,5 +51,5 @@
         after = service-names;
       };
     };
-  in { ... }: { inherit config; };
+  in config;
 }
