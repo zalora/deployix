@@ -6,7 +6,7 @@
 
 let
   secrets-file = service-name: builtins.toFile "ipsec.secrets"
-    ": P12 /etc/x509/${service-name}.p12";
+    ": P12 /etc/x509/${service-name}.p12 \"fakepass\"";
 
   #!!! TODO: use strongswan user
   config-file = ca: outgoing-hosts: builtins.toFile "ipsec.conf" ''

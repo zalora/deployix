@@ -43,10 +43,9 @@ let
     fi
     if [ ! -f ${x509-directory}/$name.p12 ]; then
       umask 0077
-      ${openssl}/bin/openssl pkcs12 -export -passout pass:ignored \
-        -in ${x509-directory}/$name.crt -inkey ${x509-directory}/$name.pem | \
-        ${openssl}/bin/openssl pkcs12 -out ${x509-directory}/$name.p12 \
-          -passin pass:ignored -nodes
+      ${openssl}/bin/openssl pkcs12 -export -passout pass:fakepass \
+        -in ${x509-directory}/$name.crt -inkey ${x509-directory}/$name.pem \
+        -out ${x509-directory}/$name.p12
       chown $user ${x509-directory}/$name.p12
       umask $oldmask
     fi
