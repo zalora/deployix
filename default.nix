@@ -1,11 +1,11 @@
-{
-  build-support = {
-    output-to-argument = import ./output-to-argument;
+{ system ? builtins.currentSystem
+, pkgs ? import <nixpkgs> { inherit system; }
+}: let
+args = { inherit pkgs defnix; };
+defnix = {
+  deflib = import ./deflib;
 
-    compile-c = import ./compile-c;
-  };
+  toolchain = import ./toolchain args;
 
-  wait-for-file = import ./wait-for-file;
-
-  defnixos = import ./defnixos;
-}
+  defnixos = import ./defnixos args;
+}; in defnix

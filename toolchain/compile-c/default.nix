@@ -1,8 +1,10 @@
 { output-to-argument
-, cc
-, coreutils
-, system
-}:
+, pkgs }:
+
+let
+  cc = "${pkgs.gcc}/bin/gcc";
+  inherit (pkgs) coreutils system;
+in
 
 c: let
   base = c.name or baseNameOf (toString c);

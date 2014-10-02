@@ -1,9 +1,12 @@
+args@{ pkgs, defnix }:
+with defnix.deflib;
 {
-  services = import ./services;
+  services = import ./services args;
 
-  activations = import ./activations;
+  activations = import ./activations args;
 
-  service-to-nixos-config = { imap, concatStringsSep, mkForce }: name: service-config: let
+  service-to-nixos-config = name: service-config: let
+    inherit (pkgs.lib) mkForce;
     # !!! TODO: Actually handle escapes
     systemd-escape = x: x;
 

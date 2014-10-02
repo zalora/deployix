@@ -1,15 +1,8 @@
-{ config, lib, pkgs, ... }: let
+{ config, lib, pkgs, ... }:
+let
   cfg = config.defnixos;
 
-  defnix = import ../.;
-
-  inherit (defnix) defnixos build-support;
-
   inherit (lib) types mkOption mapAttrsToList;
-
-  service-to-nixos-config = defnixos.service-to-nixos-config {
-    inherit (lib) imap concatStringsSep mkForce;
-  };
 
   pkgs-native-bootstrap = import pkgs.path {};
 
@@ -19,87 +12,21 @@
     sha256 = "de38ae4bc3ffe57a6af54f9b851e56f1ae58e65681c676836b182597b130432c";
   };
 
-  pkgs-native = import pkgs-src {};
-
   pkgs-default = import pkgs-src { inherit (pkgs) system; };
 
-  output-to-argument = build-support.output-to-argument {
-    inherit (pkgs-native) runCommand;
-  };
+  defnix = import ../. { pkgs = pkgs-default; inherit (pkgs-default) system; };
 
-  compile-c = build-support.compile-c {
-    inherit output-to-argument;
-    # Theoretically we could use pkgs-native and a cross-compiler...
-    cc = "${pkgs-default.gcc}/bin/gcc";
-    inherit (pkgs-default) system coreutils;
-  };
-
-  wait-for-file = defnix.wait-for-file { inherit compile-c; };
-
-  certs-activation = defnixos.activations.certs {
-    inherit (cfg.strongswan-packages) openssl wait-for-file bash;
-    inherit (pkgs-native) writeScript;
-  };
-
-  strongswan-service-fn = defnixos.services.strongswan {
-    inherit certs-activation;
-
-    inherit (cfg.strongswan-packages) strongswan kmod;
-
-    inherit (lib) imap;
-  };
+  inherit (defnix) defnixos;
 
   hosts = lib.concatLists (mapAttrsToList (n: v: v.secure-upstreams)
     (lib.filterAttrs (n: v: v ? secure-upstreams) cfg.services));
 
-  strongswan-service = strongswan-service-fn { inherit (cfg) ca; outgoing-hosts = hosts; };
+  strongswan-service = defnixos.services.strongswan { inherit (cfg) ca; outgoing-hosts = hosts; };
 
-  nixos-configs = mapAttrsToList service-to-nixos-config (cfg.services //
+  nixos-configs = mapAttrsToList defnixos.service-to-nixos-config (cfg.services //
     { strongswan = strongswan-service; });
 in {
   options = {
-    defnixos.strongswan-packages = {
-      kmod = mkOption {
-        description = "The kmod package to use for strongswan";
-
-        default = pkgs-default.kmod;
-
-        type = types.package;
-      };
-
-      strongswan = mkOption {
-        description = "The strongswan package to use for strongswan";
-
-        default = pkgs-default.strongswan;
-
-        type = types.package;
-      };
-
-      openssl = mkOption {
-        description = "The openssl package to use for strongswan activation";
-
-        default = pkgs-default.openssl;
-
-        type = types.package;
-      };
-
-      bash = mkOption {
-        description = "The bash package to use for strongswan activation";
-
-        default = pkgs-default.bash;
-
-        type = types.package;
-      };
-
-      wait-for-file = mkOption {
-        description = "The wait-for-file program to use for strongswan activation";
-
-        default = wait-for-file;
-
-        type = types.package;
-      };
-    };
-
     defnixos.ca = mkOption {
       description = "The CA used to authenticate ipsec connections";
 

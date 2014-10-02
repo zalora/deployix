@@ -1,10 +1,9 @@
-{ openssl
-, wait-for-file
-, writeScript
-, bash
-}:
+{ defnix, pkgs }:
 
 let
+  inherit (pkgs) writeScript bash openssl;
+  inherit (defnix.toolchain) wait-for-file;
+
   # Should this be a param?
   x509-directory = "/etc/x509";
 
