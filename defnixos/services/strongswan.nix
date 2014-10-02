@@ -1,10 +1,10 @@
-{ certs-activation
-, strongswan
-, imap
-, kmod
-}:
+{ defnix, pkgs }:
 
 let
+  inherit (defnix.deflib) imap;
+  inherit (pkgs) strongswan kmod;
+  certs-activation = defnix.defnixos.activations.certs;
+
   secrets-file = service-name: builtins.toFile "ipsec.secrets"
     ": P12 /etc/x509/${service-name}.p12 \"fakepass\"";
 
