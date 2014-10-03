@@ -53,7 +53,7 @@ let
   '';
 in
 
-# An activation to create a cert/keypair for a service
+# An initializer to create a cert/keypair for a service
 
 { service-name        # The name of the service using the cert
 , user ? service-name # The user who needs access to the cert

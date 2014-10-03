@@ -9,9 +9,9 @@ lib: lib.composable-set {
       # !!! TODO: Actually handle escapes
       shell-escape = x: x;
 
-      activation-script = "#!${sh} -e\n" + (lib.join "\n" (map ({ run, ... }:
+      run = "#!${sh} -e\n" + (lib.join "\n" (map ({ run, ... }:
         "(${lib.join " " (map shell-escape run)} || ${coreutils}/bin/kill $$) &"
-      ) (service-config.activations or []))) + "\nwait\n" + (lib.join " " (
+      ) (service-config.initializers or []))) + "\nwait\n" + (lib.join " " (
         map shell-escape service-config.start
       ));
 
@@ -19,7 +19,7 @@ lib: lib.composable-set {
         systemd.services.${name} = {
           description = service-config.description or "${name} service";
 
-          serviceConfig.ExecStart = write-script "${name}-exec" activation-script;
+          serviceConfig.ExecStart = write-script "${name}-exec" run;
 
           environment = {
             _type = "override";

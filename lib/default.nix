@@ -56,23 +56,23 @@ let
     # Args is a list of either attributes or attribute paths, where
     # each element denotes the path to the arguments for the function
     # at the corresponding index. For example, from the strongswan service:
-    #  composable [ [ "defnixos" "activations" ] "pkgs" ] (
+    #  composable [ [ "defnixos" "initializers" ] "pkgs" ] (
     #
-    #  activations@{ certs }:
+    #  initializers@{ certs }:
     #
     #  pkgs@{ strongswan, kmod }:
     #
     #  <etc>
     #  )
     # This is a composable function that expects its first set of arguments
-    # to come from the defnixos.activations namespace, and the second set from
+    # to come from the defnixos.initializers namespace, and the second set from
     # pkgs.
     composable = args: fn: { inherit args fn; };
 
     # Call a composable function. args is a set with attribute paths
     # corresponding to the arguments passed to composable. For example,
     #  call-composable strongswan-service {
-    #    defnixos.activations = { certs = <etc>; };
+    #    defnixos.initializers = { certs = <etc>; };
     #
     #    pkgs = { strongswan = <etc>; kmod = <etc>; };
     #  }

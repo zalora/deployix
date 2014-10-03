@@ -1,7 +1,7 @@
 lib: let
   subsets = lib.import-subdirs ./. [
     "services"
-    "activations"
+    "initializers"
     "lib"
   ];
 in subsets // {

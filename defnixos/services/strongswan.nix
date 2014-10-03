@@ -1,6 +1,6 @@
-lib: lib.composable [ [ "defnixos" "activations" ] "pkgs" ] (
+lib: lib.composable [ [ "defnixos" "initializers" ] "pkgs" ] (
 
-activations@{ certs }:
+initializers@{ certs }:
 
 pkgs@{ strongswan, kmod }:
 
@@ -56,7 +56,7 @@ in
 
   start = [ "${strongswan}/libexec/ipsec/starter" "--nofork" ];
 
-  activations = [ (certs { inherit service-name; user = "root"; }) ];
+  initializers = [ (certs { inherit service-name; user = "root"; }) ];
 
   environment.STRONGSWAN_CONF = strongswan-conf ca outgoing-hosts service-name;
 
