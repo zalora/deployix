@@ -2,7 +2,7 @@ lib: lib.composable [ "build-support" "pkgs" ] (
 
 build-support@{ write-script }:
 
-pkgs@{ openssl, wait-for-file, sh }:
+pkgs@{ openssl, wait-for-file, sh, coreutils }:
 
 let
   # Should this be a param?
@@ -24,6 +24,7 @@ let
 
   script = write-script "generate-x509" ''
     #!${sh} -e
+    PATH=${coreutils}/bin:$PATH
     name=$1
     user=$2
     if [ ! -f ${x509-directory}/$name.crt ]; then
