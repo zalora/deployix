@@ -51,20 +51,16 @@ lib: let
     (build-support@{ system }: f (nixpkgs system));
 
   inherit (builtins) getAttr;
+in lib.composable-set {
+  cc = composable-with-pkgs (pkgs: "${pkgs.gcc}/bin/cc");
 
-  pkgs = {
-    cc = composable-with-pkgs (pkgs: "${pkgs.gcc}/bin/cc");
+  coreutils = composable-with-pkgs (getAttr "coreutils");
 
-    coreutils = composable-with-pkgs (getAttr "coreutils");
+  sh = composable-with-pkgs (pkgs: "${pkgs.bash}/bin/bash");
 
-    sh = composable-with-pkgs (pkgs: "${pkgs.bash}/bin/bash");
+  strongswan = composable-with-pkgs (getAttr "strongswan");
 
-    strongswan = composable-with-pkgs (getAttr "strongswan");
+  kmod = composable-with-pkgs (getAttr "kmod");
 
-    kmod = composable-with-pkgs (getAttr "kmod");
-
-    openssl = composable-with-pkgs (getAttr "openssl");
-  };
-in pkgs // {
-  compose = lib.compose pkgs;
+  openssl = composable-with-pkgs (getAttr "openssl");
 }

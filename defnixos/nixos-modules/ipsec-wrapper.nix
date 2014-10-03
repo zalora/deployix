@@ -3,8 +3,6 @@
 
   defnix = import ../../.;
 
-  inherit (defnix.lib.defnixos) service-to-nixos-config;
-
   inherit (lib) types mkOption mapAttrsToList;
 
   composed = defnix.compose {
@@ -16,7 +14,7 @@
 
   strongswan-service = cfg.strongswan-service { inherit (cfg) ca; outgoing-hosts = hosts; };
 
-  nixos-configs = mapAttrsToList service-to-nixos-config (cfg.services //
+  nixos-configs = mapAttrsToList cfg.service-to-nixos-config (cfg.services //
     { strongswan = strongswan-service; });
 in {
   options = {
@@ -24,6 +22,12 @@ in {
       description = "An already-composed strongswan defnixos service function";
 
       default = composed.defnixos.services.strongswan;
+    };
+
+    defnixos.service-to-nixos-config = mkOption {
+      description = "An already-composed service-to-nixos-config defnixos library function";
+
+      default = composed.defnixos.lib.service-to-nixos-config;
     };
 
     defnixos.ca = mkOption {
@@ -49,9 +53,6 @@ in {
 
   config = {
     systemd.services = lib.fold (service: acc: service.systemd.services // acc)
-      {} nixos-configs;
-
-    systemd.targets = lib.fold (service: acc: service.systemd.targets // acc)
       {} nixos-configs;
   };
 }

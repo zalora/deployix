@@ -1,9 +1,3 @@
-lib:
-
-let
-  activations = (lib.import-exprs ./. [
-    "certs"
-  ]);
-in activations // {
-  compose = lib.compose activations;
-}
+lib: lib.composable-set (lib.import-exprs ./. [
+  "certs"
+])

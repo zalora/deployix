@@ -121,7 +121,8 @@ let
           (arg-overrides.${name} or {}) (arg-overrides.all or {})
       ) composables;
 
-    defnixos = import ./defnixos.nix lib;
+    # Add a compose function to a set to compose all of its attributes together
+    composable-set = set: set // { compose = lib.compose set; };
   };
 
   # Call a composable function, with a set of potential overrides for
