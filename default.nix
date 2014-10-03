@@ -1,11 +1,14 @@
-{
-  build-support = {
-    output-to-argument = import ./output-to-argument;
+let
+  lib = import ./lib;
 
-    compile-c = import ./compile-c;
-  };
+  subsets = lib.import-subdirs ./. [
+    "build-support"
+    "pkgs"
+    "defnixos"
+    "nixpkgs"
+  ];
+in subsets // {
+  compose = lib.top-nested-compose subsets;
 
-  wait-for-file = import ./wait-for-file;
-
-  defnixos = import ./defnixos;
+  inherit lib;
 }

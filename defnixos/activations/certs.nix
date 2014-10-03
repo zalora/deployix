@@ -1,8 +1,8 @@
-{ openssl
-, wait-for-file
-, writeScript
-, bash
-}:
+lib: lib.composable [ "build-support" "pkgs" ] (
+
+build-support@{ write-script }:
+
+pkgs@{ openssl, wait-for-file, sh }:
 
 let
   # Should this be a param?
@@ -22,8 +22,8 @@ let
     subjectAltName = email:copy
   '';
 
-  script = writeScript "generate-x509" ''
-    #!${bash}/bin/bash -e
+  script = write-script "generate-x509" ''
+    #!${sh} -e
     name=$1
     user=$2
     if [ ! -f ${x509-directory}/$name.crt ]; then
@@ -62,4 +62,4 @@ in
   description = "Generate x509 cert/key pair for ${service-name}";
 
   run = [ script service-name user ];
-}
+})

@@ -1,8 +1,8 @@
-{ output-to-argument
-, cc
-, coreutils
-, system
-}:
+lib: lib.composable [ "build-support" "pkgs" ] (
+
+build-support@{ output-to-argument, cc, system }:
+
+pkgs@{ coreutils }:
 
 c: let
   base = c.name or baseNameOf (toString c);
@@ -13,8 +13,7 @@ in output-to-argument (derivation {
 
   builder = cc;
 
-  # GCC wrapper uses cat...
-  PATH = [ "${coreutils}/bin" ];
+  PATH = "${coreutils}/bin";
 
   args = [ c "-O3" "-o" "@out" ];
-})
+}))

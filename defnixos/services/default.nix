@@ -1,4 +1,9 @@
-#!!! a readdir primop would be great here...
-builtins.listToAttrs (map (name: { inherit name; value = import (./. + "/${name}.nix"); })
-  [ "strongswan"
-  ])
+lib:
+
+let
+  services = (lib.import-exprs ./. [
+    "strongswan"
+  ]);
+in services // {
+  compose = lib.compose services;
+}

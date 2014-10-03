@@ -1,8 +1,8 @@
-{ certs-activation
-, strongswan
-, imap
-, kmod
-}:
+lib: lib.composable [ [ "defnixos" "activations" ] "pkgs" ] (
+
+activations@{ certs }:
+
+pkgs@{ strongswan, kmod }:
 
 let
   secrets-file = service-name: builtins.toFile "ipsec.secrets"
@@ -14,7 +14,7 @@ let
       leftid=it-services@zalora.com
       type=transport
       auto=add
-    ${toString (imap (idx: host: ''
+    ${toString (lib.imap (idx: host: ''
       conn outbound-${toString idx}
         leftid=it-services@zalora.com
         right=${host}
@@ -56,9 +56,9 @@ in
 
   start = [ "${strongswan}/libexec/ipsec/starter" "--nofork" ];
 
-  activations = [ (certs-activation { inherit service-name; user = "root"; }) ];
+  activations = [ (certs { inherit service-name; user = "root"; }) ];
 
   environment.STRONGSWAN_CONF = strongswan-conf ca outgoing-hosts service-name;
 
   environment.PATH = "${kmod}/bin:${kmod}/sbin:${strongswan}/bin:${strongswan}/sbin";
-}
+})
