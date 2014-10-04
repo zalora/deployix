@@ -3,8 +3,6 @@ wait-for-file
 
 Wait until a file exists, then returns.
 
-Does not check if the file exists first.
-
 Exit codes
 -----------
 

@@ -63,4 +63,6 @@ in lib.composable-set {
   kmod = composable-with-pkgs (getAttr "kmod");
 
   openssl = composable-with-pkgs (getAttr "openssl");
+
+  patchelf = composable-with-pkgs (getAttr "patchelf");
 }

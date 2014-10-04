@@ -7,4 +7,6 @@ lib: lib.composable-set ((lib.import-subdirs ./. [
   cc = lib.composable [ "nixpkgs" ] (nixpkgs@{ cc }: cc);
 
   system = lib.composable [ ] builtins.currentSystem;
+
+  patchelf = lib.composable [ "nixpkgs" ] (nixpkgs@{ patchelf }: patchelf);
 })
