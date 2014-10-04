@@ -9,10 +9,7 @@
     all.build-support.system = pkgs.system;
   };
 
-  hosts = lib.concatLists (mapAttrsToList (n: v: v.secure-upstreams)
-    (lib.filterAttrs (n: v: v ? secure-upstreams) cfg.services));
-
-  strongswan-service = cfg.strongswan-service { inherit (cfg) ca; outgoing-hosts = hosts; };
+  strongswan-service = cfg.strongswan-service { inherit (cfg) ca; outgoing-hosts = cfg.secure-upstreams; };
 
   nixos-configs = mapAttrsToList cfg.service-to-nixos-config (cfg.services //
     { strongswan = strongswan-service; });
@@ -22,32 +19,38 @@ in {
       description = "An already-composed strongswan defnixos service function";
 
       default = composed.defnixos.services.strongswan;
+
+      type = types.uniq types.unspecified;
     };
 
     defnixos.service-to-nixos-config = mkOption {
       description = "An already-composed service-to-nixos-config defnixos library function";
 
       default = composed.defnixos.lib.service-to-nixos-config;
+
+      type = types.uniq types.unspecified;
     };
 
     defnixos.ca = mkOption {
       description = "The CA used to authenticate ipsec connections";
 
-      type = types.path;
+      type = types.uniq types.path;
+    };
+
+    defnixos.secure-upstreams = mkOption {
+      description = "Upstreams this machine needs access to over ipsec";
+
+      default = [];
+
+      type = types.uniq (types.listOf types.str);
     };
 
     defnixos.services = mkOption {
       default = {};
 
-      type = types.attrsOf types.attrs;
+      type = types.uniq (types.attrsOf types.attrs);
 
-      description = ''
-        Defnixos services to run on the machine.
-
-        In addition to the normal service attributes, services can
-        have a `secure-upstreams` attribute specifying a list of hosts
-        to set up on-demand outbound ipsec connections to.
-      '';
+      description = "Defnixos services to run on the machine.";
     };
   };
 
