@@ -39,7 +39,7 @@ lib: let
    * pkgs that you've actually tested, and keep the rest at the version of
    * nixpkgs they're currently using
    */
-  nixpkgs = system: import (fetchgit-bootstrap {
+  nixpkgs-499c510 = system: import (fetchgit-bootstrap {
     url = "git://github.com/NixOS/nixpkgs.git";
 
     rev = "499c51016ef67bd0b158528dbff17ed6ecedd78b";
@@ -47,22 +47,21 @@ lib: let
     sha256 = "8676c5d51578b7ff9208ef0613445f71a3841902a435f12d4af6d9ac23bea053";
   }) { inherit system; };
 
-  composable-with-pkgs = f: lib.composable [ "build-support" ]
-    (build-support@{ system }: f (nixpkgs system));
+  inherit-pkgs = lib.map-attrs (pkg: pkgs-fun: lib.composable [ "build-support" ] (
+    build-support@{ system }: (pkgs-fun system).${pkg}
+  ));
+in lib.composable-set (inherit-pkgs {
+  gcc = nixpkgs-499c510;
 
-  inherit (builtins) getAttr;
-in lib.composable-set {
-  cc = composable-with-pkgs (pkgs: "${pkgs.gcc}/bin/cc");
+  coreutils = nixpkgs-499c510;
 
-  coreutils = composable-with-pkgs (getAttr "coreutils");
+  bash = nixpkgs-499c510;
 
-  sh = composable-with-pkgs (pkgs: "${pkgs.bash}/bin/bash");
+  strongswan = nixpkgs-499c510;
 
-  strongswan = composable-with-pkgs (getAttr "strongswan");
+  kmod = nixpkgs-499c510;
 
-  kmod = composable-with-pkgs (getAttr "kmod");
+  openssl = nixpkgs-499c510;
 
-  openssl = composable-with-pkgs (getAttr "openssl");
-
-  patchelf = composable-with-pkgs (getAttr "patchelf");
-}
+  patchelf = nixpkgs-499c510;
+})
