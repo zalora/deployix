@@ -2,7 +2,7 @@ lib: lib.composable [ [ "defnixos" "initializers" ] "pkgs" ] (
 
 initializers@{ certs }:
 
-pkgs@{ strongswan, kmod }:
+pkgs@{ strongswan, kmod, execve }:
 
 let
   secrets-file = service-name: builtins.toFile "ipsec.secrets"
@@ -52,13 +52,11 @@ in
 }:
 
 {
-  description = "Strongswan ipsec keying daemon";
+  start = execve "start-strongswan" "${strongswan}/libexec/ipsec/starter" [ "starter" "--nofork" ] {
+    STRONGSWAN_CONF = strongswan-conf ca outgoing-hosts service-name;
 
-  start = [ "${strongswan}/libexec/ipsec/starter" "--nofork" ];
+    PATH = "${kmod}/bin:${kmod}/sbin:${strongswan}/bin:${strongswan}/sbin";
+  };
 
   initializers = [ (certs { inherit service-name; user = "root"; }) ];
-
-  environment.STRONGSWAN_CONF = strongswan-conf ca outgoing-hosts service-name;
-
-  environment.PATH = "${kmod}/bin:${kmod}/sbin:${strongswan}/bin:${strongswan}/sbin";
 })

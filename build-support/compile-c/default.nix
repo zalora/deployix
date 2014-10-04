@@ -5,7 +5,7 @@ build-support@{ output-to-argument, cc, system, patchelf }:
 pkgs@{ coreutils }:
 
 flags: c: let
-  base = c.name or baseNameOf (toString c);
+  base = c.name or (baseNameOf (toString c));
 
   compile-and-patchelf = output-to-argument (derivation {
     name = "compile-and-patchelf";

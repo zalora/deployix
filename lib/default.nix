@@ -2,11 +2,15 @@ let
   lib = {
     # Map a function taking an attribute name and the corresponding
     # value and returning a new value over a set.
-    map-attrs = f: set: builtins.listToAttrs (map (name: {
-      inherit name;
+    map-attrs = f: set: builtins.listToAttrs (lib.map-attrs-to-list (
+      name: value: { inherit name; value = f name value; }
+    ) set);
 
-      value = f name set.${name};
-    }) (builtins.attrNames set));
+    # Transform a set into a list by mapping a function taking a name and
+    # the corresponding value and returning the relevant list entry over a
+    # set.
+    map-attrs-to-list = f: set:
+      map (name: f name set.${name}) (builtins.attrNames set);
 
     # Map a funciton taking a list index and the corresponding element and
     # returning a new value over a list
@@ -49,7 +53,7 @@ let
     in if maybe-get.acc then maybe-get.set else def;
 
     # join strings with separator sep
-    join = sep: strings: lib.foldl (acc: string: "${acc} ${string}")
+    join = sep: strings: lib.foldl (acc: string: "${acc}${sep}${string}")
       (builtins.head strings) (builtins.tail strings);
 
     # Make a function composable.

@@ -3,6 +3,7 @@ lib: lib.composable-set ((lib.import-subdirs ./. [
   "output-to-argument"
   "run-script"
   "write-script"
+  "write-file"
 ]) // {
   cc = lib.composable [ "nixpkgs" ] (nixpkgs@{ gcc }: "${gcc}/bin/cc");
 

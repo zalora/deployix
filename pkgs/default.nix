@@ -1,5 +1,6 @@
 lib: lib.composable-set ((lib.import-subdirs ./. [
   "wait-for-file"
+  "execve"
 ]) // {
   coreutils = lib.composable [ "nixpkgs" ] (nixpkgs@{ coreutils }: coreutils);
 

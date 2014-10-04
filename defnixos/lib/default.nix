@@ -5,29 +5,16 @@ lib: lib.composable-set {
 
     pkgs@{ coreutils, sh }:
 
-    name: service-config: let
-      # !!! TODO: Actually handle escapes
-      shell-escape = x: x;
-
-      run = "#!${sh} -e\n" + (lib.join "\n" (map ({ run, ... }:
-        "(${lib.join " " (map shell-escape run)} || ${coreutils}/bin/kill $$) &"
-      ) (service-config.initializers or []))) + "\nwait\n" + (lib.join " " (
-        map shell-escape service-config.start
-      ));
+    name: service-config@{ start, initializers ? [] }: let
+      run = "#!${sh} -e\n" + (lib.join "\n" (map (initializer:
+        "(${initializer} || ${coreutils}/bin/kill $$) &"
+      ) initializers)) + "\nwait\n${start}";
 
       config = {
         systemd.services.${name} = {
-          description = service-config.description or "${name} service";
+          description = "${name} service";
 
           serviceConfig.ExecStart = write-script "${name}-exec" run;
-
-          environment = {
-            _type = "override";
-
-            content = service-config.environment or {};
-
-            priority = 50;
-          };
 
           wantedBy = [ "multi-user.target" ];
         };
