@@ -5,11 +5,13 @@
 #include <string.h>
 #include <stdbool.h>
 
+static int out_fd;
+
 static void write_full(const void * buf, size_t sz) {
 tail_call: ;
-  ssize_t written = write(3, buf, sz);
+  ssize_t written = write(out_fd, buf, sz);
   if (written == -1)
-    err(1, "writing to stdout");
+    err(1, "writing to %s", getenv("out"));
   else {
     sz -= written;
     buf += written;
@@ -22,8 +24,8 @@ tail_call: ;
 }
 
 int main(int argc, char ** argv) {
-  int fd = open(getenv("out"), O_WRONLY | O_CREAT, 0755);
-  if (fd == -1)
+  out_fd = open(getenv("out"), O_WRONLY | O_CREAT, 0755);
+  if (out_fd == -1)
     err(1, "opening %s", getenv("out"));
 
   while(*(++argv)) {
