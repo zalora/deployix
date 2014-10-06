@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include <stdlib.h>
 #include <string.h>
 #include <sys/un.h>
@@ -60,6 +61,15 @@ int main(int argc, char ** argv) {
   int epoll_fd = epoll_create1(EPOLL_CLOEXEC);
   if (epoll_fd == -1)
     err(1, "Opening epoll fd");
+
+  int top_fd = sysconf(_SC_OPEN_MAX) - 1;
+  if (dup3(epoll_fd, top_fd, O_CLOEXEC) == -1)
+    err(1, "Duping epoll fd to a high descriptor");
+
+  if (close(epoll_fd) == -1)
+    err(1, "Closing original epoll fd");
+
+  epoll_fd = top_fd;
 
   char * filename = *(++argv);
   char * progname = *(++argv);

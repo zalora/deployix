@@ -35,7 +35,7 @@ in
     argv = [ "php-fpm" "-R" "--fpm-config" (config pool-name) "-c" ini ];
 
     envp = {
-      FPM_SOCKETS = "/run/phpfpm/${pool-name}.sock=4";
+      FPM_SOCKETS = "/run/phpfpm/${pool-name}.sock=3";
     };
   }) [ (socket {
     addr = "/run/phpfpm/${pool-name}.sock";
