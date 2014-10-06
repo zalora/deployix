@@ -35,5 +35,5 @@ in output-to-argument (derivation {
 
   PATH = "${coreutils}/bin";
 
-  args = [ c "-Wl,-S" "-O3" "-std=c11" "-o" "@out" ] ++ flags;
+  args = [ c "-Wall" "-Werror" "-Wl,-S" "-O3" "-std=c11" "-o" "@out" ] ++ flags;
 }))

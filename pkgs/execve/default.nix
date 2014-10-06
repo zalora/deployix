@@ -4,7 +4,19 @@ build-support@{ compile-c, write-file }:
 
 pkgs@{ coreutils }:
 
-name: filename: argv: envp: compile-c [ "-Wl,-s" ] (write-file "${name}.c" ''
+name: { filename, argv, envp ? null }: let
+  needs-envp = envp != null;
+
+  exec-fun = if needs-envp
+    then "execve(filename, argv, envp)"
+    else "execv(filename, argv)";
+
+  envp-def = if needs-envp then ''
+    static char * envp[] = { ${lib.join ", " ((lib.map-attrs-to-list (name: value:
+      ''"${name}=${value}"''
+    ) envp) ++ [ "NULL" ])} };
+  '' else "";
+in compile-c [ "-Wl,-s" ] (write-file "${name}.c" ''
   #include <unistd.h>
   #include <err.h>
 
@@ -15,12 +27,10 @@ name: filename: argv: envp: compile-c [ "-Wl,-s" ] (write-file "${name}.c" ''
     ''"${arg}"''
   ) argv) ++ [ "NULL" ])} };
 
-  static char * envp[] = { ${lib.join ", " ((lib.map-attrs-to-list (name: value:
-    ''"${name}=${value}"''
-  ) envp) ++ [ "NULL" ])} };
+  ${envp-def}
 
   int main(int argc, char ** _argv) {
-    execve(filename, argv, envp);
+    ${exec-fun};
     err(212, "executing %s", filename);
   }
 ''))

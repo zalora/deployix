@@ -11,8 +11,7 @@
 
   strongswan-service = cfg.strongswan-service { inherit (cfg) ca; outgoing-hosts = cfg.secure-upstreams; };
 
-  nixos-configs = mapAttrsToList cfg.service-to-nixos-config (cfg.services //
-    { strongswan = strongswan-service; });
+  services = cfg.services // { strongswan = strongswan-service; };
 in {
   options = {
     defnixos.strongswan-service = mkOption {
@@ -23,10 +22,10 @@ in {
       type = types.uniq types.unspecified;
     };
 
-    defnixos.service-to-nixos-config = mkOption {
-      description = "An already-composed service-to-nixos-config defnixos library function";
+    defnixos.services-to-nixos-config = mkOption {
+      description = "An already-composed services-to-nixos-config defnixos library function";
 
-      default = composed.defnixos.lib.service-to-nixos-config;
+      default = composed.defnixos.lib.services-to-nixos-config;
 
       type = types.uniq types.unspecified;
     };
@@ -55,7 +54,6 @@ in {
   };
 
   config = {
-    systemd.services = lib.fold (service: acc: service.systemd.services // acc)
-      {} nixos-configs;
+    inherit (cfg.services-to-nixos-config services) systemd;
   };
 }

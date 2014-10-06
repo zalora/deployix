@@ -4,6 +4,7 @@ lib: lib.composable-set ((lib.import-subdirs ./. [
   "run-script"
   "write-script"
   "write-file"
+  "compile-arguments"
 ]) // {
   cc = lib.composable [ "nixpkgs" ] (nixpkgs@{ gcc }: "${gcc}/bin/cc");
 

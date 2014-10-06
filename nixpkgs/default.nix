@@ -64,4 +64,6 @@ in lib.composable-set (inherit-pkgs {
   openssl = nixpkgs-499c510;
 
   patchelf = nixpkgs-499c510;
+
+  php = nixpkgs-499c510;
 })

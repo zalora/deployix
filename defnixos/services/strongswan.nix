@@ -52,10 +52,16 @@ in
 }:
 
 {
-  start = execve "start-strongswan" "${strongswan}/libexec/ipsec/starter" [ "starter" "--nofork" ] {
-    STRONGSWAN_CONF = strongswan-conf ca outgoing-hosts service-name;
+  start = execve "start-strongswan" {
+    filename = "${strongswan}/libexec/ipsec/starter";
 
-    PATH = "${kmod}/bin:${kmod}/sbin:${strongswan}/bin:${strongswan}/sbin";
+    argv = [ "starter" "--nofork" ];
+
+    envp = {
+      STRONGSWAN_CONF = strongswan-conf ca outgoing-hosts service-name;
+
+      PATH = "${kmod}/bin:${kmod}/sbin:${strongswan}/bin:${strongswan}/sbin";
+    };
   };
 
   initializers = [ (certs { inherit service-name; user = "root"; }) ];

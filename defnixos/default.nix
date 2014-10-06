@@ -3,6 +3,7 @@ lib: let
     "services"
     "initializers"
     "lib"
+    "activations"
   ];
 in subsets // {
   compose = lib.nested-compose subsets;

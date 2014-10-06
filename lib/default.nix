@@ -53,8 +53,10 @@ let
     in if maybe-get.acc then maybe-get.set else def;
 
     # join strings with separator sep
-    join = sep: strings: lib.foldl (acc: string: "${acc}${sep}${string}")
-      (builtins.head strings) (builtins.tail strings);
+    join = sep: strings: if strings != []
+      then lib.foldl (acc: string: "${acc}${sep}${string}")
+        (builtins.head strings) (builtins.tail strings)
+      else "";
 
     # Make a function composable.
     # Args is a list of either attributes or attribute paths, where

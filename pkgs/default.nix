@@ -1,6 +1,8 @@
 lib: lib.composable-set ((lib.import-subdirs ./. [
   "wait-for-file"
   "execve"
+  "multiplex-activations"
+  "notify-readiness"
 ]) // {
   coreutils = lib.composable [ "nixpkgs" ] (nixpkgs@{ coreutils }: coreutils);
 
@@ -11,4 +13,6 @@ lib: lib.composable-set ((lib.import-subdirs ./. [
   kmod = lib.composable [ "nixpkgs" ] (nixpkgs@{ kmod }: kmod);
 
   openssl = lib.composable [ "nixpkgs" ] (nixpkgs@{ openssl }: openssl);
+
+  php = lib.composable [ "nixpkgs" ] (nixpkgs@{ php }: php);
 })

@@ -58,6 +58,10 @@ in
 , user ? service-name # The user who needs access to the cert
 }:
 
-execve "${service-name}-x509-generation" script [ "generate-x509" service-name user ] {
-  PATH = "${coreutils}/bin";
+execve "${service-name}-x509-generation" {
+  filename = script;
+
+  argv = [ "generate-x509" service-name user ];
+
+  envp =  { PATH = "${coreutils}/bin"; };
 })
