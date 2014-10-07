@@ -7,7 +7,7 @@ build-support@{ compile-c, write-file }:
 prog: let
   run-as-user = user: if prog ? run-as-user
     then prog.run-as-user user
-    else (compile-c [ "-Wl,-s" ] (write-file "run-${prog.name}-${user}.c" ''
+    else (compile-c [ "-Wl,-s" ] (write-file "run-${prog.name}-as-${user}.c" ''
       #include <unistd.h>
       #include <err.h>
 
