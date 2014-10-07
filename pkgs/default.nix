@@ -6,6 +6,7 @@ lib: lib.composable-set ((lib.import-subdirs ./. [
   "run-as-user"
   "par"
   "seq"
+  "generate-certs"
 ]) // {
   coreutils = lib.composable [ "nixpkgs" ] (nixpkgs@{ coreutils }: coreutils);
 

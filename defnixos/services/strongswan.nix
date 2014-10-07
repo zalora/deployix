@@ -1,8 +1,6 @@
-lib: lib.composable [ [ "defnixos" "initializers" ] "pkgs" ] (
+lib: lib.composable [ "pkgs" ] (
 
-initializers@{ certs }:
-
-pkgs@{ strongswan, kmod, execve }:
+pkgs@{ strongswan, kmod, execve, generate-certs }:
 
 let
   secrets-file = service-name: builtins.toFile "ipsec.secrets"
@@ -64,5 +62,5 @@ in
     };
   };
 
-  initializer = certs { inherit service-name; user = "root"; };
+  initializer = generate-certs service-name;
 })
