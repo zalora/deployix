@@ -2,6 +2,7 @@ let
   lib = import ./lib;
 
   subsets = lib.import-subdirs ./. [
+    "eval-support"
     "build-support"
     "pkgs"
     "defnixos"
