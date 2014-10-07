@@ -1,6 +1,8 @@
+#define _GNU_SOURCE
 #include <unistd.h>
-#include <errno.h>
+#include <err.h>
 #include <sys/wait.h>
+#include <stdlib.h>
 #include <errno.h>
 #include <signal.h>
 
