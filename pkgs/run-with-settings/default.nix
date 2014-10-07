@@ -1,6 +1,8 @@
-lib: lib.composable [ "eval-support" "build-support" "pkgs" ] (
+lib: lib.composable [ "eval-support" "pkgs" ] (
 
-eval-support@{ calculate-id, execve }:
+eval-support@{ calculate-id }:
+
+pkgs@{ execve }:
 
 prog: settings: if prog ? run-with-settings
   then prog.run-with-settings settings
