@@ -75,6 +75,10 @@ static int bind_sock(void * args) {
   if (setsockopt(sock_fd, IPPROTO_IPV6, IPV6_V6ONLY, &no, sizeof no) == -1)
     err(1, "Turning off ipv6only");
 
+  int yes = 1;
+  if (setsockopt(sock_fd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof yes) == -1)
+    err(1, "Turning on SO_REUSEADDR");
+
   if (bind(sock_fd, (struct sockaddr *) &addr, sizeof addr) == -1)
     err(1, "Binding to [::]:%d", (short) *port);
 
