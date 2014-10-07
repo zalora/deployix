@@ -24,11 +24,11 @@ name: let
 
     setuid = if user == null
       then "0"
-      else "setuid(${calculate-id user})";
+      else "setuid(${toString (calculate-id user)})";
 
     setgid = if group == null
       then "0"
-      else "setgid(${calculate-id group})";
+      else "setgid(${toString (calculate-id group)})";
   in (compile-c [ "-Wl,-s" ] (write-file "${name}.c" ''
     #include <unistd.h>
     #include <err.h>
