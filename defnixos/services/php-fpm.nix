@@ -7,7 +7,7 @@ pkgs@{ multiplex-activations, execve, php }:
 # A php-fpm pool
 
 { socket-path # The path to the fpm socket
-, config # the php-fpm config
+, config # the php-fpm config file
 , ini ? "${php}/etc/php-recommended.ini" # php.ini
 }:
 
