@@ -1,57 +1,38 @@
-lib: lib.composable [ "build-support" [ "defnixos" "activations" ] "pkgs" [ "defnixos" "initializers" ] ] (
+lib: lib.composable [ "build-support" [ "defnixos" "activations" ] "pkgs" ] (
 
-build-support@{ write-file }:
+build-support@{ write-script }:
 
 activations@{ socket }:
 
-pkgs@{ multiplex-activations, execve, nginx }:
-
-initializers@{ dirs }:
-
-let
-
-  config = port: extra-config: write-file "nginx-${toString port}.conf" ''
-    user root root;
-
-    daemon off;
-
-    events {
-      use epoll;
-    }
-
-    http {
-      server {
-        listen [::]:${toString port} ipv6only=off;
-        ${extra-config}
-      }
-    }
-  '';
-
-in
-
-# nginx web server
+pkgs@{ multiplex-activations, execve, nginx, sh }:
 
 { port # Port to listen on
-, server-config # Contents of server block (don't include port configuration)
+, config-file # Configuration file, should only listen on [::]:${port} with ipv6only=off
+, prefix ? "/var/lib/nginx"  # nginx prefix (temp files etc. live here by default)
+, log-dir ? "/var/log/nginx" # nginx default log dir
 }:
 
 {
-  start = multiplex-activations (execve "start-nginx-${toString port}" {
+  start = multiplex-activations [ (socket {
+    family = lib.socket-address-families.AF_INET6;
+
+    inherit port;
+  }) ] (execve "start-nginx-${toString port}" {
     filename = "${nginx}/bin/nginx";
 
-    # !!! TODO: Unshare state dir
-    argv = [ "nginx" "-c" (config port server-config) "-p" "/tmp/nginx" ];
+    argv = [ "nginx" "-c" config-file "-p" prefix ];
 
     envp = {
       NGINX = "3;";
     };
-  }) [ (socket {
-    family = lib.socket-address-families.AF_INET6;
-
-    inherit port;
-  }) ];
+  });
 
   on-demand = true;
 
-  initializer = dirs { dir = "/tmp/nginx/logs"; };
+  initializer = write-script "setup-nginx-dirs" ''
+    #!${sh} -e
+    mkdir -p ${prefix} -m 700
+    mkdir -p ${log-dir} -m 700
+    ln -svf ${log-dir} ${prefix}/logs
+  '';
 })
