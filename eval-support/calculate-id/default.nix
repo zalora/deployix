@@ -2,10 +2,10 @@ lib: lib.composable [ "build-support" "eval-support" ] (
 
 build-support@{ compile-c, system }:
 
-eval-support@{ target-system }:
+eval-support@{ eval-system }:
 
 # verify target-id-t et. al. if adding a new system
-assert builtins.elem target-system [ "x86_64-linux" "i686-linux" ];
+assert builtins.elem system [ "x86_64-linux" "i686-linux" ];
 
 let
   /* If overriding because of a clash (rather than because a specific uid
@@ -37,7 +37,7 @@ let
 in name: import (derivation {
   name = "${name}-id.nix";
 
-  inherit system;
+  system = eval-system;
 
   builder = calculate-id;
 
