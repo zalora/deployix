@@ -7,5 +7,5 @@ pkgs@{ execve }:
 name: progs: execve name {
   filename = compile-c [ "-Wl,-s" ] ./seq.c;
 
-  argv = [ name ] ++ concatLists (map (prog: [ prog prog.name ]) progs);
-}
+  argv = [ name ] ++ builtins.concatLists (map (prog: [ prog prog.name ]) progs);
+})
