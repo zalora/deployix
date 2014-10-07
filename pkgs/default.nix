@@ -3,6 +3,7 @@ lib: lib.composable-set ((lib.import-subdirs ./. [
   "execve"
   "multiplex-activations"
   "notify-readiness"
+  "run-as-user"
 ]) // {
   coreutils = lib.composable [ "nixpkgs" ] (nixpkgs@{ coreutils }: coreutils);
 
