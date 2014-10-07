@@ -5,7 +5,11 @@ eval-support@{ calculate-id }:
 build-support@{ compile-c, write-file }:
 
 name: let
-  self = args@{ filename, argv, envp ? null, user ? null }: let
+  self = args@{ filename, argv, envp ? null, settings ? {} }: let
+    user = settings.user or null;
+
+    group = settings.group or null;
+
     needs-envp = envp != null;
 
     exec-fun = if needs-envp
@@ -21,6 +25,10 @@ name: let
     setuid = if user == null
       then "0"
       else "setuid(${calculate-id user})";
+
+    setgid = if group == null
+      then "0"
+      else "setgid(${calculate-id group})";
   in (compile-c [ "-Wl,-s" ] (write-file "${name}.c" ''
     #include <unistd.h>
     #include <err.h>
@@ -35,12 +43,18 @@ name: let
     ${envp-def}
 
     int main(int argc, char ** _argv) {
+      if (${setgid} == -1)
+        err(213, "Setting group id");
       if (${setuid} == -1)
         err(213, "Setting user id");
       ${exec-fun};
       err(212, "executing %s", filename);
     }
   '')) // {
-    run-as-user = user: self (args // { inherit user; });
+    run-with-settings = new-settings: self (args // {
+      settings = settings // new-settings;
+    });
+
+    inherit settings;
   };
 in self)

@@ -3,7 +3,7 @@ lib: lib.composable-set ((lib.import-subdirs ./. [
   "execve"
   "multiplex-activations"
   "notify-readiness"
-  "run-as-user"
+  "run-with-settings"
   "par"
   "seq"
   "generate-certs"

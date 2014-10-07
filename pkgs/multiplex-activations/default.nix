@@ -2,7 +2,7 @@ lib: lib.composable [ "build-support" "pkgs" ] (
 
 build-support@{ compile-c }:
 
-pkgs@{ execve, switch-user }:
+pkgs@{ execve, run-with-settings }:
 
 activations: assert activations != []; let
   multiplex-activations =
@@ -15,6 +15,6 @@ activations: assert activations != []; let
 
     argv = [ "multiplex-activations" start name ] ++ activations;
   }) // {
-    run-as-user = user: self (switch-user start user);
+    run-with-settings = settings: self (run-with-settings start settings);
   };
 in self)
