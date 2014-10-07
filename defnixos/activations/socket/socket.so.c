@@ -10,7 +10,9 @@
 #include <stddef.h>
 #include <unistd.h>
 #include <sys/epoll.h>
+#include <netinet/in.h>
 
+#ifdef DEFNIX_SOCKET_UNIX
 static void mkdir_p(char * dir) {
   for (char * sep = strchr(dir + 1, '/'); sep; sep = strchr(sep + 1, '/')) {
     *sep = '\0';
@@ -22,7 +24,7 @@ static void mkdir_p(char * dir) {
     err(1, "Creating directory %s", dir);
 }
 
-void activate(int epoll_fd, void * args) {
+static int bind_sock(void * args) {
   size_t * path_len = (size_t *) args;
   args += sizeof(size_t);
   char * path = (char *) args;
@@ -48,14 +50,46 @@ void activate(int epoll_fd, void * args) {
   if (bind(sock_fd, (struct sockaddr *) &addr, sizeof addr) == -1)
     err(1, "Binding socket");
 
+  if (chmod(path, 0666) == -1)
+    err(1, "Changing ownership of socket");
+
+  return sock_fd;
+}
+#endif
+
+#ifdef DEFNIX_SOCKET_IPV6
+static int bind_sock(void * args) {
+  long * port = (long *) args;
+
+  int sock_fd = socket(PF_INET6, SOCK_STREAM, 0);
+  if (sock_fd == -1)
+    err(1, "Opening socket for activation");
+
+  struct sockaddr_in6 addr;
+  memset(&addr, 0, sizeof addr);
+  addr.sin6_family = AF_INET6;
+  addr.sin6_port = htons(*port);
+  addr.sin6_addr = in6addr_any;
+
+  int no = 0;
+  if (setsockopt(sock_fd, IPPROTO_IPV6, IPV6_V6ONLY, &no, sizeof no) == -1)
+    err(1, "Turning off ipv6only");
+
+  if (bind(sock_fd, (struct sockaddr *) &addr, sizeof addr) == -1)
+    err(1, "Binding to [::]:%d", (short) *port);
+
+  return sock_fd;
+}
+#endif
+
+void activate(int epoll_fd, void * args) {
+  int sock_fd = bind_sock(args);
+
   struct epoll_event ev;
   memset(&ev, 0, sizeof ev);
   ev.events = EPOLLIN | EPOLLET | EPOLLONESHOT;
   if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, sock_fd, &ev) == -1)
     err(1, "Registering socket with epoll fd");
-
-  if (chmod(path, 0666) == -1)
-    err(1, "Changing ownership of socket");
 
   if (listen(sock_fd, SOMAXCONN) == -1)
     err(1, "Listening on socket");

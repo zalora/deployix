@@ -2,7 +2,9 @@ lib: lib.composable [ [ "defnixos" "activations" ] "pkgs" ] (
 
 activations@{ socket }:
 
-pkgs@{ multiplex-activations, execve, php }: let
+pkgs@{ multiplex-activations, execve, php }:
+
+let
 
   ini = "${php}/etc/php-recommended.ini";
 
@@ -38,7 +40,9 @@ in
       FPM_SOCKETS = "/run/phpfpm/${pool-name}.sock=3";
     };
   }) [ (socket {
-    addr = "/run/phpfpm/${pool-name}.sock";
+    family = lib.socket-address-families.AF_UNIX;
+
+    path = "/run/phpfpm/${pool-name}.sock";
   }) ];
 
   on-demand = true;

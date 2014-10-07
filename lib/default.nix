@@ -129,6 +129,13 @@ let
 
     # Add a compose function to a set to compose all of its attributes together
     composable-set = set: set // { compose = lib.compose set; };
+
+    # BSD address families
+    socket-address-families = {
+      AF_UNIX = 0;
+
+      AF_INET6 = 1;
+    };
   };
 
   # Call a composable function, with a set of potential overrides for

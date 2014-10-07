@@ -15,4 +15,6 @@ lib: lib.composable-set ((lib.import-subdirs ./. [
   openssl = lib.composable [ "nixpkgs" ] (nixpkgs@{ openssl }: openssl);
 
   php = lib.composable [ "nixpkgs" ] (nixpkgs@{ php }: php);
+
+  nginx = lib.composable [ "nixpkgs" ] (nixpkgs@{ nginx }: nginx);
 })

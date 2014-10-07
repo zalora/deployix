@@ -66,4 +66,6 @@ in lib.composable-set (inherit-pkgs {
   patchelf = nixpkgs-499c510;
 
   php = nixpkgs-499c510;
+
+  nginx = nixpkgs-499c510;
 })
