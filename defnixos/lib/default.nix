@@ -6,13 +6,10 @@ lib: lib.composable-set {
     pkgs@{ coreutils, sh, notify-readiness }:
 
     services: let
-      make-regular-systemd-service = name: { start, initializers }: let
+      make-regular-systemd-service = name: { start, initializer }: let
         run = ''
           #!${sh} -e
-          ${lib.join "\n" (map (initializer:
-            "(${initializer} || ${coreutils}/bin/kill $$) &"
-          ) initializers)}
-          wait
+          ${toString initializer}
           mkdir -p /run/defnixos-services/${name}
           cd /run/defnixos-services/${name}
           exec ${start}
@@ -27,13 +24,10 @@ lib: lib.composable-set {
         };
       in { inherit name value; };
 
-      make-on-demand-systemd-services = name: { start, initializers }: let
+      make-on-demand-systemd-services = name: { start, initializer }: let
         listen-run = ''
           #!${sh} -e
-          ${lib.join "\n" (map (initializer:
-            "(${initializer} || ${coreutils}/bin/kill $$) &"
-          ) initializers)}
-          wait
+          ${toString initializer}
           mkdir -p /run/defnixos-services/${name}
           cd /run/defnixos-services/${name}
           exec ${start}
@@ -72,8 +66,8 @@ lib: lib.composable-set {
       ];
 
       make-systemd-services =
-        name: { start, initializers ? [], on-demand ? false }: let
-          service-config = { inherit start initializers; };
+        name: { start, initializer ? null, on-demand ? false }: let
+          service-config = { inherit start initializer; };
         in if on-demand
             then make-on-demand-systemd-services name service-config
             else [ (make-regular-systemd-service name service-config) ];

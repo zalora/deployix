@@ -64,5 +64,5 @@ in
     };
   };
 
-  initializers = [ (certs { inherit service-name; user = "root"; }) ];
+  initializer = certs { inherit service-name; user = "root"; };
 })

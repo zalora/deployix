@@ -53,5 +53,5 @@ in
 
   on-demand = true;
 
-  initializers = [ (dirs { dir = "/tmp/nginx/logs"; }) ];
+  initializer = dirs { dir = "/tmp/nginx/logs"; };
 })
