@@ -44,6 +44,14 @@ in {
       type = types.uniq (types.listOf types.str);
     };
 
+    defnixos.users = mkOption {
+      description = "Usernames used by defnixos services";
+
+      default = [];
+
+      type = types.uniq (types.listOf types.str);
+    };
+
     defnixos.services = mkOption {
       default = {};
 
@@ -55,5 +63,10 @@ in {
 
   config = {
     inherit (cfg.services-to-nixos-config services) systemd;
+
+    users.extraUsers = builtins.listToAttrs (map (name: {
+      inherit name;
+      value.uid = composed.eval-support.calculate-id name;
+    }) cfg.users);
   };
 }
