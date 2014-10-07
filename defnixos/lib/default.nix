@@ -58,6 +58,8 @@ lib: lib.composable-set {
 
           unitConfig.BindsTo = [ "${name}.service" ];
 
+          after = [ "${name}.service" ];
+
           wantedBy = [ "defnixos.target" ];
         };
       in [
