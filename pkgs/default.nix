@@ -7,6 +7,7 @@ lib: lib.composable-set ((lib.import-subdirs ./. [
   "par"
   "seq"
   "generate-certs"
+  "fake-sendmail"
 ]) // {
   coreutils = lib.composable [ "nixpkgs" ] (nixpkgs@{ coreutils }: coreutils);
 
