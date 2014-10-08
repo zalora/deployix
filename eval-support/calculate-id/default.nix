@@ -22,24 +22,19 @@ let
 
   target-id-t = "uint32_t";
 
-  target-id-t-format = ''"%" PRIu32'';
-
-  hardcodes-init = lib.join ", " (lib.map-attrs-to-list (name: id:
-    ''{ .id = ${toString id}, .name = "${name}" }''
-  ) hardcodes);
+  target-id-t-format = "PRIu32";
 
   calculate-id = compile-c [
     "-DTARGET_ID_T=${target-id-t}"
     "-DTARGET_ID_T_FORMAT=${target-id-t-format}"
-    "-DHARDCODES_INIT=${hardcodes-init}"
   ] ./calculate-id.c;
 
-in name: import (derivation {
+in name: hardcodes.${name} or (import (derivation {
   name = "${name}-id.nix";
 
   system = eval-system;
 
   builder = calculate-id;
 
-  args = [ name ];
-}))
+  args = [ (builtins.hashString "sha256" name) ];
+})))
