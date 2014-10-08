@@ -11,4 +11,6 @@ lib: lib.composable-set ((lib.import-subdirs ./. [
   system = lib.composable [ ] builtins.currentSystem;
 
   patchelf = lib.composable [ "nixpkgs" ] (nixpkgs@{ patchelf }: patchelf);
+
+  ghc = lib.composable [ "nixpkgs" ] (nixpkgs@{ ghcPlain }: ghcPlain);
 })
