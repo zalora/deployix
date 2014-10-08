@@ -50,6 +50,8 @@ lib: let
   inherit-pkgs = lib.map-attrs (pkg: pkgs-fun: lib.composable [ "build-support" ] (
     build-support@{ system }: (pkgs-fun system).${pkg}
   ));
+
+  haskellPackages-499c510 = system: (nixpkgs-499c510 system).haskellPackages;
 in lib.composable-set (inherit-pkgs {
   gcc = nixpkgs-499c510;
 
@@ -68,4 +70,6 @@ in lib.composable-set (inherit-pkgs {
   php = nixpkgs-499c510;
 
   nginx = nixpkgs-499c510;
+
+  ghcPlain = haskellPackages-499c510;
 })

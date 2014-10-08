@@ -1,8 +1,11 @@
-lib: lib.composable [ ] (
-let
-  pkgs = import <nixpkgs> {};
+lib: lib.composable [ "build-support" "pkgs" ] (
 
-  fakeSendmailScript = pkgs.writeText "fakeSendmailScript.hs" ''
+build-support@{ ghc, output-to-argument, system }:
+
+pkgs@{ coreutils }:
+
+let
+  fakeSendmailScript = builtins.toFile "fakeSendmailScript.hs" ''
     import Prelude hiding (log)
     import System.Environment
     import System.IO
@@ -22,13 +25,14 @@ let
     logStdin :: String -> IO ()
     logStdin message = log ("stdin: " ++ message)
   '';
-in
-pkgs.stdenv.mkDerivation {
+in output-to-argument (derivation {
   name = "fakeSendmail";
-  buildInputs = [ pkgs.haskellPackages.ghcPlain ];
-  buildCommand = ''
-    ghc ${fakeSendmailScript} --make -o ./sendmail
-    mkdir -p $out/bin
-    cp sendmail $out/bin/
-  '';
-})
+
+  inherit system;
+
+  PATH = "${coreutils}/bin";
+
+  builder = "${ghc}/bin/ghc";
+
+  args = [ fakeSendmailScript "--make" "-o" "@out" ];
+}))
