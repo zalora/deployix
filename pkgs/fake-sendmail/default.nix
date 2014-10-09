@@ -1,6 +1,6 @@
 lib: lib.composable [ "build-support" "pkgs" ] (
 
-build-support@{ ghc, output-to-argument, system, write-script }:
+build-support@{ ghc, system, run-script }:
 
 pkgs@{ coreutils, sh }:
 
@@ -25,17 +25,9 @@ let
     logStdin :: String -> IO ()
     logStdin message = log ("stdin: " ++ message)
   '';
-in output-to-argument (derivation {
-  name = "fakeSendmail";
-
-  inherit system;
-
+in run-script "fakeSendmail" {
   PATH = "${coreutils}/bin:${ghc}/bin";
-
-  builder = write-script "compile.sh" ''
-    #!${sh}
-
-    mkdir -p $out/bin/
-    ghc ${fakeSendmailScript} --make -o $out/bin/sendmail
-  '';
-}))
+} ''
+  mkdir -p $out/bin/
+  ghc ${fakeSendmailScript} --make -o $out/bin/sendmail
+'')
