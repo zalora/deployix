@@ -1,8 +1,8 @@
 lib: lib.composable [ "build-support" "pkgs" ] (
 
-build-support@{ ghc, output-to-argument, system }:
+build-support@{ ghc, output-to-argument, system, write-script }:
 
-pkgs@{ coreutils }:
+pkgs@{ coreutils, sh }:
 
 let
   fakeSendmailScript = builtins.toFile "fakeSendmailScript.hs" ''
@@ -30,9 +30,12 @@ in output-to-argument (derivation {
 
   inherit system;
 
-  PATH = "${coreutils}/bin";
+  PATH = "${coreutils}/bin:${ghc}/bin";
 
-  builder = "${ghc}/bin/ghc";
+  builder = write-script "compile.sh" ''
+    #!${sh}
 
-  args = [ fakeSendmailScript "--make" "-o" "@out" ];
+    mkdir -p $out/bin/
+    ghc ${fakeSendmailScript} --make -o $out/bin/sendmail
+  '';
 }))
