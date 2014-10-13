@@ -29,5 +29,5 @@ in run-script "fakeSendmail" {
   PATH = "${coreutils}/bin:${ghc}/bin";
 } ''
   mkdir -p $out/bin/
-  ghc ${fakeSendmailScript} --make -o $out/bin/sendmail
+  ghc ${fakeSendmailScript} --make -outputdir . -o $out/bin/sendmail
 '')
