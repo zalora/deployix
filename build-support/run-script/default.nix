@@ -1,13 +1,11 @@
-lib: lib.composable [ "build-support" "pkgs" ] (
+defnix: let
+  inherit (defnix.pkgs) sh;
+in name: env: script: derivation (env // {
+  inherit name script;
 
-build-support@{ system }:
-
-pkgs@{ sh }:
-
-name: env: script: derivation (env // {
-  inherit name script system;
+  inherit (sh) system;
 
   builder = sh;
 
   args = [ "-e" "-c" "eval \"$script\"" ];
-}))
+})
