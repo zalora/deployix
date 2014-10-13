@@ -1,10 +1,8 @@
-lib: lib.composable [ "build-support" "pkgs" ] (
+defnix: let
+  inherit (defnix.build-support) run-script;
 
-build-support@{ run-script }:
-
-pkgs@{ coreutils }:
-
-name: text: run-script name { inherit text; } ''
+  inherit (defnix.pkgs) coreutils;
+in name: text: run-script name { inherit text; } ''
   echo -n "$text" > $out
   ${coreutils}/bin/chmod +x $out
-'')
+''
