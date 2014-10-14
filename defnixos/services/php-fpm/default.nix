@@ -1,5 +1,5 @@
 defnix: let
-  inherit (defnix.activations) socket;
+  inherit (defnix.defnixos.activations) socket;
 
   inherit (defnix.pkgs) multiplex-activations execve php;
 in
