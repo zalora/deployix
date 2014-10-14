@@ -1,17 +1,8 @@
-lib: lib.composable [ "build-support" "eval-support" ] (
+defnix: let
+  inherit (defnix.build-support) compile-c;
 
-build-support@{ compile-c, system }:
+  inherit (defnix.config) eval-system target-system;
 
-eval-support@{ eval-system }:
-
-# verify target-id-t et. al. if adding a new system
-assert builtins.elem system [ "x86_64-linux" "i686-linux" ];
-
-let
-  /* If overriding because of a clash (rather than because a specific uid
-   * is needed), please use a uid whose binary representation has a null
-   * byte in the middle so it's sure not to clash again
-   */
   hardcodes = {
     root = 0;
 
@@ -28,8 +19,12 @@ let
     "-DTARGET_ID_T=${target-id-t}"
     "-DTARGET_ID_T_FORMAT=${target-id-t-format}"
   ] ./calculate-id.c;
+in
 
-in name: hardcodes.${name} or (import (derivation {
+# verify target-id-t et. al. if adding a new system
+assert builtins.elem target-system [ "x86_64-linux" "i686-linux" ];
+
+name: hardcodes.${name} or (import (derivation {
   name = "${name}-id.nix";
 
   system = eval-system;
@@ -37,4 +32,4 @@ in name: hardcodes.${name} or (import (derivation {
   builder = calculate-id;
 
   args = [ (builtins.hashString "sha256" name) ];
-})))
+}))

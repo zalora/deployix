@@ -5,7 +5,6 @@
 #include <err.h>
 #include <inttypes.h>
 
-/* UB if hex is not hex */
 static char hex_to_nibble(char hex) {
   switch (hex) {
     case '0': return 0x0;
@@ -23,11 +22,11 @@ static char hex_to_nibble(char hex) {
     case 'c': return 0xc;
     case 'd': return 0xd;
     case 'e': return 0xe;
-    default: return 0xf;
+    default:  return 0xf;
   }
 }
 
-/* UB if hash is not all hex or hash is shorter than sizeof(TARGET_ID_T) */
+/* UB if hash is shorter than sizeof(TARGET_ID_T) */
 static TARGET_ID_T calculate_id(const char * hash) {
   size_t binary_hash_len = strlen(hash) / 2;
 
