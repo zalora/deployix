@@ -1,8 +1,8 @@
-lib: lib.composable [ "pkgs" ] (
-
-pkgs@{ strongswan, kmod, execve, generate-certs }:
+defnix:
 
 let
+  inherit (defnix.pkgs) strongswan kmod execve generate-certs;
+
   secrets-file = service-name: builtins.toFile "ipsec.secrets"
     ": P12 /etc/x509/${service-name}.p12 \"fakepass\"";
 
@@ -12,7 +12,7 @@ let
       leftid=it-services@zalora.com
       type=transport
       auto=add
-    ${toString (lib.imap (idx: host: ''
+    ${toString (defnix.lib.imap (idx: host: ''
       conn outbound-${toString idx}
         leftid=it-services@zalora.com
         right=${host}
@@ -40,10 +40,6 @@ let
   '';
 in
 
-# A service to allow incoming ipsec connections from any host with
-# a cert signed by the right CA and outgoing ipsec connections to
-# the hosts in outgoing-hosts
-
 { outgoing-hosts ? []         # Hosts to make outgoing connections to
 , ca                          # The root CA certificate
 , service-name ? "strongswan" # The name of this service in the global service namespace
@@ -63,4 +59,4 @@ in
   };
 
   initializer = generate-certs service-name;
-})
+}
