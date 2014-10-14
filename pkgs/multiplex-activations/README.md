@@ -45,6 +45,6 @@ user then run as an unprivileged one.
 Example
 --------
 
-See `<defnix/defnixos/services/php-fpm.nix>` for an example.
+See `<defnix/defnixos/services/php-fpm/default.nix>` for an example.
 
 [1]: http://www.freedesktop.org/software/systemd/man/sd_notify.html
