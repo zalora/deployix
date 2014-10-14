@@ -1,10 +1,8 @@
-lib: lib.composable [ "build-support" "pkgs" ] (
+defnix: let
+  inherit (defnix.build-support) write-script;
 
-build-support@{ write-script }:
+  inherit (defnix.pkgs) openssl wait-for-file sh coreutils execve;
 
-pkgs@{ openssl, wait-for-file, sh, coreutils, execve }:
-
-let
   # Should this be a param?
   x509-directory = "/etc/x509";
 
@@ -53,4 +51,4 @@ in name: execve "${name}-x509-generation" {
   argv = [ "generate-x509" name ];
 
   envp =  { PATH = "${coreutils}/bin"; };
-})
+}
