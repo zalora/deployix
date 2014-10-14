@@ -1,7 +1,8 @@
 socket
 =======
 
-An on-demand activation for listening on a socket.
+An on-demand activation for listening on a socket. The activation is ready
+when a connection arrives.
 
 Arguments
 ----------
