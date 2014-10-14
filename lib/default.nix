@@ -45,8 +45,16 @@ let
         (builtins.head strings) (builtins.tail strings)
       else "";
 
+    # Encapsulate the readDir builtin so we can throw a nice error message.
     readDir = builtins.readDir or (throw "defnix requires a nix version >= 1.8pre3843_3f8576a");
 
+    # Recursively import a directory. Directory names are used as attr names,
+    # values are set to either:
+    #   a) import dir/default.nix
+    #   b) import dir/uncomposed.nix lib
+    #   c) recursive-import dir
+    # depending on whether default.nix or uncomposed.nix exist in the directory.
+    # See <defnix/README.md> for some explanation of this behavior
     recursive-import = dir: let
       dirents = lib.readDir dir;
 
