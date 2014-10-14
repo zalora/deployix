@@ -47,12 +47,12 @@ lib: let
     sha256 = "8676c5d51578b7ff9208ef0613445f71a3841902a435f12d4af6d9ac23bea053";
   }) { inherit system; };
 
-  inherit-pkgs = lib.map-attrs (pkg: pkgs-fun: lib.composable [ "build-support" ] (
-    build-support@{ system }: (pkgs-fun system).${pkg}
-  ));
-
   haskellPackages-499c510 = system: (nixpkgs-499c510 system).haskellPackages;
-in lib.composable-set (inherit-pkgs {
+
+  inherit-pkgs = lib.map-attrs (pkg: pkgs-fun: defnix:
+    (pkgs-fun defnix.config.target-system).${pkg}
+  );
+in (inherit-pkgs {
   gcc = nixpkgs-499c510;
 
   coreutils = nixpkgs-499c510;
@@ -70,6 +70,8 @@ in lib.composable-set (inherit-pkgs {
   php = nixpkgs-499c510;
 
   nginx = nixpkgs-499c510;
-
-  ghcPlain = haskellPackages-499c510;
-})
+}) // {
+  haskellPackages = inherit-pkgs {
+    ghcPlain = haskellPackages-499c510;
+  };
+}
