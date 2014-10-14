@@ -3,13 +3,13 @@ lib: (lib.recursive-import ./.) // {
   coreutils = defnix: defnix.nixpkgs.coreutils;
 
   # A POSIX shell
-  sh = defnix: "${defnix.pkgs.bash}/bin/bash";
+  sh = defnix: "${defnix.nixpkgs.bash}/bin/bash";
 
   # The strongswan IKEv2 daemon
-  strongswan = defnix: defnix.pkgs.strongswan;
+  strongswan = defnix: defnix.nixpkgs.strongswan;
 
   # Linux kernel module tools
-  kmod = defnix: defnix.pkgs.kmod;
+  kmod = defnix: defnix.nixpkgs.kmod;
 
   # Open source toolkit for SSL/TLS
   openssl = defnix: defnix.nixpkgs.openssl;
