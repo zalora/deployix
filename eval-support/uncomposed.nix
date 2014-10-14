@@ -1,0 +1,1 @@
+lib: lib.recursive-import ./.
