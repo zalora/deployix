@@ -1,15 +1,16 @@
+overrides@{ config ? {}, ... }:
+
 let
   lib = import ./lib;
 
-  subsets = lib.import-subdirs ./. [
-    "eval-support"
-    "build-support"
-    "pkgs"
-    "defnixos"
-    "nixpkgs"
-  ];
-in subsets // {
-  compose = lib.top-nested-compose subsets;
+  uncomposed = import ./uncomposed.nix lib;
 
-  inherit lib;
-}
+  deep-call = x: has-overrides: overrides: if builtins.isAttrs x
+    then lib.map-attrs (name: value:
+      deep-call value (has-overrides && overrides ? name) overrides.name
+    ) x else if has-overrides then overrides else x defnix;
+
+  defnix = (deep-call uncomposed true overrides) // {
+    inherit lib config;
+  };
+in defnix

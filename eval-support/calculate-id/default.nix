@@ -1,7 +1,9 @@
 defnix: let
   inherit (defnix.build-support) compile-c;
 
-  inherit (defnix.config) eval-system target-system;
+  eval-system = defnix.config.eval-system or builtins.currentSystem;
+
+  target-system = defnix.config.target-system or builtins.currentSystem;
 
   hardcodes = {
     root = 0;
