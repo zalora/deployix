@@ -1,10 +1,8 @@
-lib: lib.composable [ "build-support" "pkgs" ] (
+defnix: let
+  inherit (defnix.pkgs) coreutils;
 
-build-support@{ ghc, system, run-script }:
+  inherit (defnix.build-support) ghc run-script;
 
-pkgs@{ coreutils, sh }:
-
-let
   fakeSendmailScript = builtins.toFile "fakeSendmailScript.hs" ''
     import Prelude hiding (log)
     import System.Environment
@@ -26,8 +24,8 @@ let
     logStdin message = log ("stdin: " ++ message)
   '';
 in run-script "fakeSendmail" {
-  PATH = "${coreutils}/bin:${ghc}/bin";
+  PATH = "${coreutils}/bin";
 } ''
   mkdir -p $out/bin/
-  ghc ${fakeSendmailScript} --make -outputdir . -o $out/bin/sendmail
-'')
+  ${ghc} ${fakeSendmailScript} --make -outputdir . -o $out/bin/sendmail
+''

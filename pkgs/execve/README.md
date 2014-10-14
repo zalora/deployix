@@ -15,11 +15,6 @@ Arguments
   * `user`: The user to switch to.
   * `group`: The group to switch to.
 
-Return
--------
-
-A derivation whose output is an exectuable as described above.
-
 Exit codes
 ----------
 
