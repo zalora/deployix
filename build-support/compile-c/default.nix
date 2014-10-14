@@ -12,7 +12,7 @@ flags: c: let
   compile-and-patchelf = output-to-argument (derivation {
     name = "compile-and-patchelf";
 
-    inherit (cc) system;
+    inherit (patchelf) system;
 
     builder = cc;
 
