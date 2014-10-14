@@ -1,5 +1,3 @@
-lib: lib.composable [ "build-support" ] (
+defnix:
 
-build-support@{ compile-c }:
-
-compile-c [] ./wait-for-file.c)
+defnix.build-support.compile-c [] ./wait-for-file.c

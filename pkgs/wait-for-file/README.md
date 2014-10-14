@@ -1,7 +1,7 @@
 wait-for-file
 ==============
 
-Wait until a file exists, then returns.
+Wait until a file exists, then return.
 
 Exit codes
 -----------
