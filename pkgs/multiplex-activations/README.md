@@ -42,4 +42,9 @@ the underlying service, *not* the activations, is run with the given settings.
 This is so that services can acquire resources like sockets as a privileged
 user then run as an unprivileged one.
 
+Example
+--------
+
+See `<defnix/defnixos/services/php-fpm.nix>` for an example.
+
 [1]: http://www.freedesktop.org/software/systemd/man/sd_notify.html

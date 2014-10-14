@@ -1,5 +1,3 @@
-lib: lib.composable [ "build-support" ] (
+defnix:
 
-build-support@{ compile-c }:
-
-compile-c [ "-Wl,-s" ] ./notify-readiness.c)
+defnix.build-support.compile-c [ "-Wl,-s" ] ./notify-readiness.c
