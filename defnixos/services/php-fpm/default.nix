@@ -1,10 +1,8 @@
-lib: lib.composable [ [ "defnixos" "activations" ] "pkgs" ] (
+defnix: let
+  inherit (defnix.activations) socket;
 
-activations@{ socket }:
-
-pkgs@{ multiplex-activations, execve, php }:
-
-# A php-fpm pool
+  inherit (defnix.pkgs) multiplex-activations execve php;
+in
 
 { socket-path # The path to the fpm socket
 , config # the php-fpm config file
@@ -13,7 +11,7 @@ pkgs@{ multiplex-activations, execve, php }:
 
 {
   start = multiplex-activations [ (socket {
-    family = lib.socket-address-families.AF_UNIX;
+    family = defnix.lib.socket-address-families.AF_UNIX;
 
     path = socket-path;
   }) ] (execve "start-php-fpm" {
@@ -27,4 +25,4 @@ pkgs@{ multiplex-activations, execve, php }:
   });
 
   on-demand = true;
-})
+}
