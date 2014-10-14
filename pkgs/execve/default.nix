@@ -1,10 +1,12 @@
-lib: lib.composable [ "eval-support" "build-support" ] (
-
-eval-support@{ calculate-id }:
-
-build-support@{ compile-c, write-file }:
+defnix:
 
 name: let
+  inherit (defnix.lib) join map-attrs-to-list;
+
+  inherit (defnix.eval-support) calculate-id;
+
+  inherit (defnix.build-support) compile-c write-file;
+
   self = args@{ filename, argv, envp ? null, settings ? {} }: let
     user = settings.user or null;
 
@@ -17,7 +19,7 @@ name: let
       else "execv(filename, argv)";
 
     envp-def = if needs-envp then ''
-      static char * envp[] = { ${lib.join ", " ((lib.map-attrs-to-list (name: value:
+      static char * envp[] = { ${join ", " ((map-attrs-to-list (name: value:
         ''"${name}=${value}"''
       ) envp) ++ [ "NULL" ])} };
     '' else "";
@@ -36,7 +38,7 @@ name: let
     static char * filename = "${filename}";
 
     /* TODO: Properly escape nix strings into C string literals */
-    static char * argv[] = { ${lib.join ", " ((map (arg:
+    static char * argv[] = { ${join ", " ((map (arg:
       ''"${arg}"''
     ) argv) ++ [ "NULL" ])} };
 
@@ -57,4 +59,4 @@ name: let
 
     inherit settings;
   };
-in self)
+in self
