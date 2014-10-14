@@ -62,6 +62,10 @@ the result of calling `<defnix/build-support/compile-c/default.nix>` with
 the full `defnix` set. An overrides set of `{ build-support = {}; }`, however,
 will not affect any leaf values as no full path to any leaf is present.
 
+For example,
+`(import <defnix> { build-support.cc = "${pkgs.klibc}/bin/klcc"; }).pkgs.notify-readiness`
+will result in a version of `notify-readiness` linked against `klibc` instead of `glibc`.
+
 Configuration values
 ---------------------
 
