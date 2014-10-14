@@ -11,6 +11,12 @@ let
     ) x else if has-overrides then overrides else x defnix;
 
   defnix = (deep-call uncomposed true overrides) // {
-    inherit lib config;
+    inherit lib;
+
+    config = {
+      target-system = builtins.currentSystem;
+
+      eval-system = builtins.currentSystem;
+    } // config;
   };
 in defnix

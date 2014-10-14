@@ -5,6 +5,8 @@ flags: c: let
 
   inherit (defnix.pkgs) coreutils;
 
+  inherit (defnix.config) target-system;
+
   base = c.name or (baseNameOf (toString c));
 
   base-flags = [ "-Wall" "-Werror" "-Wl,-S" "-O3" "-std=c11" "-o" "@out" ];
@@ -12,7 +14,7 @@ flags: c: let
   compile-and-patchelf = output-to-argument (derivation {
     name = "compile-and-patchelf";
 
-    inherit (patchelf) system;
+    system = target-system;
 
     builder = cc;
 
@@ -27,7 +29,7 @@ flags: c: let
 in output-to-argument (derivation {
   name = builtins.substring 0 (builtins.stringLength base - 2) base;
 
-  inherit (compile-and-patchelf) system;
+  system = target-system;
 
   builder = compile-and-patchelf;
 

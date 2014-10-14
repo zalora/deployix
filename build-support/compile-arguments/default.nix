@@ -3,6 +3,8 @@ defnix:
 name: args: let
   inherit (defnix.build-support) compile-c;
 
+  inherit (defnix.config) target-system;
+
   compile-arguments = compile-c [] ./compile-arguments.c;
 in derivation {
   name = "${name}-arguments";
@@ -13,5 +15,5 @@ in derivation {
     [ (builtins.typeOf (arg.outPath or arg)) arg ]
   ) args);
 
-  inherit (compile-arguments) system;
+  system = target-system;
 }

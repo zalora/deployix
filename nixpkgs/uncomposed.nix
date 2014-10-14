@@ -50,7 +50,7 @@ lib: let
   haskellPackages-499c510 = system: (nixpkgs-499c510 system).haskellPackages;
 
   inherit-pkgs = lib.map-attrs (pkg: pkgs-fun: defnix:
-    (pkgs-fun (defnix.config.target-system or builtins.currentSystem)).${pkg}
+    (pkgs-fun defnix.config.target-system).${pkg}
   );
 in (inherit-pkgs {
   gcc = nixpkgs-499c510;
