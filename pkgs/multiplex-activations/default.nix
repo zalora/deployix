@@ -1,10 +1,10 @@
-lib: lib.composable [ "build-support" "pkgs" ] (
-
-build-support@{ compile-c }:
-
-pkgs@{ execve, run-with-settings }:
+defnix:
 
 activations: assert activations != []; let
+  inherit (defnix.build-support) compile-c;
+
+  inherit (defnix.pkgs) execve run-with-settings;
+
   multiplex-activations =
     compile-c [ "-ldl" "-Wl,-s" ] ./multiplex-activations.c;
 
@@ -17,4 +17,4 @@ activations: assert activations != []; let
   }) // {
     run-with-settings = settings: self (run-with-settings start settings);
   };
-in self)
+in self
