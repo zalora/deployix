@@ -1,13 +1,9 @@
 { config, lib, pkgs, ... }: let
   cfg = config.defnixos;
 
-  defnix = import ../../.;
+  defnix = import ../../. { config.target-system = pkgs.system; };
 
   inherit (lib) types mkOption mapAttrsToList;
-
-  composed = defnix.compose {
-    all.build-support.system = pkgs.system;
-  };
 
   strongswan-service = cfg.strongswan-service { inherit (cfg) ca; outgoing-hosts = cfg.secure-upstreams; };
 
@@ -17,7 +13,7 @@ in {
     defnixos.strongswan-service = mkOption {
       description = "An already-composed strongswan defnixos service function";
 
-      default = composed.defnixos.services.strongswan;
+      default = defnix.defnixos.services.strongswan;
 
       type = types.uniq types.unspecified;
     };
@@ -25,7 +21,7 @@ in {
     defnixos.services-to-nixos-config = mkOption {
       description = "An already-composed services-to-nixos-config defnixos library function";
 
-      default = composed.defnixos.lib.services-to-nixos-config;
+      default = defnix.defnixos.nixos-wrappers.services-to-nixos-config;
 
       type = types.uniq types.unspecified;
     };
@@ -66,7 +62,7 @@ in {
 
     users.extraUsers = builtins.listToAttrs (map (name: {
       inherit name;
-      value.uid = composed.eval-support.calculate-id name;
+      value.uid = defnix.eval-support.calculate-id name;
     }) cfg.users);
   };
 }
