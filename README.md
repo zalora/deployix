@@ -8,6 +8,9 @@ community but don't fit into upstream `nixpkgs` for whatever reason.
 Additionally, it is the repository for `defnixos`, our service-oriented
 deployment specification library.
 
+See `<defnix/defnixos/nixos-wrappers/ipsec-wrapper.nix>` for an example
+of how you can use `defnix`.
+
 Organization
 -------------
 
@@ -62,9 +65,12 @@ the result of calling `<defnix/build-support/compile-c/default.nix>` with
 the full `defnix` set. An overrides set of `{ build-support = {}; }`, however,
 will not affect any leaf values as no full path to any leaf is present.
 
-For example,
-`(import <defnix> { build-support.cc = "${pkgs.klibc}/bin/klcc"; }).pkgs.notify-readiness`
-will result in a version of `notify-readiness` linked against `klibc` instead of `glibc`.
+Some examples:
+
+* `(import <defnix> { build-support.cc = "${pkgs.klibc}/bin/klcc"; }).pkgs.notify-readiness`
+  will result in a version of `notify-readiness` linked against `klibc` instead of `glibc`.
+* `import <defnix> { nixpkgs.haskellPackages.hakyll = import <my-hakyll> { ??? }; }` will
+  override the `hakyll` package.
 
 Configuration values
 ---------------------
