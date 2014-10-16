@@ -1,3 +1,40 @@
+#ifndef DEFNIX_TYPES_ONLY
+#define _GNU_SOURCE
+#endif
+
+#include ACTIVATION_HEADER
+#include <stdint.h>
+
+enum socket_addr_type {
+  socket_addr_un,
+  socket_addr_ipv6
+};
+
+#define socket_addr_header(f_sz, s_sz) \
+  struct { \
+    activation_header(f_sz, s_sz) act_hdr; \
+    enum socket_addr_type type; \
+  }
+
+#define ipv6_addr(f_sz, s_sz) \
+  struct { \
+    socket_addr_header(f_sz, s_sz) addr_hdr; \
+    uint16_t port; \
+  }
+
+#define un_addr_header(f_sz, s_sz) \
+  struct { \
+    socket_addr_header(f_sz, s_sz) addr_hdr; \
+    size_t path_size; \
+  }
+
+#define un_addr(f_sz, s_sz, u_sz) \
+  struct { \
+    un_addr_header(f_sz, s_sz) un_hdr; \
+    char path[(u_sz)]; \
+  }
+
+#ifndef DEFNIX_TYPES_ONLY
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -12,7 +49,6 @@
 #include <sys/epoll.h>
 #include <netinet/in.h>
 
-#ifdef DEFNIX_SOCKET_UNIX
 static void mkdir_p(char * dir) {
   for (char * sep = strchr(dir + 1, '/'); sep; sep = strchr(sep + 1, '/')) {
     *sep = '\0';
@@ -24,42 +60,45 @@ static void mkdir_p(char * dir) {
     err(1, "Creating directory %s", dir);
 }
 
-static int bind_sock(void * args) {
-  size_t * path_len = (size_t *) args;
-  args += sizeof(size_t);
-  char * path = (char *) args;
+static int bind_un(struct activation_header_sizes * sizes) {
+  typedef un_addr_header(sizes->filename_size, sizes->symbol_size) u_hdr;
+  u_hdr * settings_hdr = (u_hdr *) sizes;
+  typedef un_addr( sizes->filename_size
+                 , sizes->symbol_size
+                 , settings_hdr->path_size
+                 ) u_addr;
+  u_addr * settings = (u_addr *) sizes;
 
   struct sockaddr_un addr;
-  if (*path_len > sizeof addr - offsetof(struct sockaddr_un, sun_path))
-    errx(1, "Path %s too long for a unix socket", path);
+  if (settings_hdr->path_size > sizeof addr - offsetof(struct sockaddr_un, sun_path))
+    errx(1, "Path %s too long for a unix socket", settings->path);
 
-  char path_copy[*path_len];
-  memmove(path_copy, path, *path_len);
+  char path_copy[settings_hdr->path_size];
+  memmove(path_copy, settings->path, settings_hdr->path_size);
   mkdir_p(dirname(path_copy));
 
   int sock_fd = socket(PF_UNIX, SOCK_STREAM, 0);
   if (sock_fd == -1)
     err(1, "Opening socket for activation");
 
-  if (unlink(path) == -1 && errno != ENOENT)
-    err(1, "Unlinking %s", path);
+  if (unlink(settings->path) == -1 && errno != ENOENT)
+    err(1, "Unlinking %s", settings->path);
 
   memset(&addr, 0, sizeof addr);
   addr.sun_family = AF_UNIX;
-  memmove(addr.sun_path, path, *path_len);
+  memmove(addr.sun_path, settings->path, settings_hdr->path_size);
   if (bind(sock_fd, (struct sockaddr *) &addr, sizeof addr) == -1)
     err(1, "Binding socket");
 
-  if (chmod(path, 0666) == -1)
+  if (chmod(settings->path, 0666) == -1)
     err(1, "Changing ownership of socket");
 
   return sock_fd;
 }
-#endif
 
-#ifdef DEFNIX_SOCKET_IPV6
-static int bind_sock(void * args) {
-  long * port = (long *) args;
+static int bind_ipv6(struct activation_header_sizes * sizes) {
+  typedef ipv6_addr(sizes->filename_size, sizes->symbol_size) i_addr;
+  i_addr * settings = (i_addr *) sizes;
 
   int sock_fd = socket(PF_INET6, SOCK_STREAM, 0);
   if (sock_fd == -1)
@@ -68,7 +107,7 @@ static int bind_sock(void * args) {
   struct sockaddr_in6 addr;
   memset(&addr, 0, sizeof addr);
   addr.sin6_family = AF_INET6;
-  addr.sin6_port = htons(*port);
+  addr.sin6_port = htons(settings->port);
   addr.sin6_addr = in6addr_any;
 
   int no = 0;
@@ -80,14 +119,24 @@ static int bind_sock(void * args) {
     err(1, "Turning on SO_REUSEADDR");
 
   if (bind(sock_fd, (struct sockaddr *) &addr, sizeof addr) == -1)
-    err(1, "Binding to [::]:%d", (short) *port);
+    err(1, "Binding to [::]:%d", settings->port);
 
   return sock_fd;
 }
-#endif
 
-void activate(int epoll_fd, void * args) {
-  int sock_fd = bind_sock(args);
+static int bind_sock(struct activation_header_sizes * sizes) {
+  typedef socket_addr_header(sizes->filename_size, sizes->symbol_size) s_addr;
+  s_addr * addr = (s_addr *) sizes;
+  switch (addr->type) {
+    case socket_addr_un:
+      return bind_un(sizes);
+    default: /* socket_addr_ipv6 */
+      return bind_ipv6(sizes);
+  }
+}
+
+void activate(int epoll_fd, struct activation_header_sizes * sizes) {
+  int sock_fd = bind_sock(sizes);
 
   struct epoll_event ev;
   memset(&ev, 0, sizeof ev);
@@ -98,3 +147,5 @@ void activate(int epoll_fd, void * args) {
   if (listen(sock_fd, SOMAXCONN) == -1)
     err(1, "Listening on socket");
 }
+
+#endif /* DEFNIX_TYPES_ONLY */

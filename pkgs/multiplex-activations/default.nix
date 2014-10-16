@@ -5,8 +5,13 @@ activations: assert activations != []; let
 
   inherit (defnix.pkgs) execve run-with-settings;
 
-  multiplex-activations =
-    compile-c [ "-ldl" "-Wl,-s" ] ./multiplex-activations.c;
+  inherit (defnix.defnixos.activations) activation-header;
+
+  multiplex-activations = compile-c [
+    "-ldl"
+    "-Wl,-s"
+    ''-DACTIVATION_HEADER="${activation-header}"''
+  ] ./multiplex-activations.c;
 
   self = start: assert activations != []; let
     name = start.name or (baseNameOf (toString start));

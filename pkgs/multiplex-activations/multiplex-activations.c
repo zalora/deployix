@@ -1,4 +1,5 @@
 #define _GNU_SOURCE
+#include ACTIVATION_HEADER
 #include <stdlib.h>
 #include <string.h>
 #include <sys/un.h>
@@ -84,45 +85,47 @@ int main(int argc, char ** argv) {
     if (fstat(arg_file_fd, &st) == -1)
       err(1, "Statting %s fd", arg_file);
 
-    void * map =
-      mmap(NULL, st.st_size, PROT_READ | PROT_WRITE, MAP_PRIVATE, arg_file_fd, 0);
+    struct activation_header_sizes * sizes = (struct activation_header_sizes *)
+      mmap( NULL
+          , st.st_size
+          , PROT_READ | PROT_WRITE
+          , MAP_PRIVATE
+          , arg_file_fd
+          , 0
+          );
 
-    void * map_iter = map;
-
-    if (map == MAP_FAILED)
+    if (sizes == MAP_FAILED)
       err(1, "Mapping %s into memory", arg_file);
 
     if (close(arg_file_fd) == -1)
       err(1, "Closing %s", arg_file);
 
-    size_t * filename_size = (size_t *) map_iter;
-    map_iter += sizeof(size_t);
-    char * filename = (char *) map_iter;
-    map_iter += *filename_size;
+    typedef activation_header(sizes->filename_size, sizes->symbol_size) hdr;
+    hdr * header = (hdr *) sizes;
 
-    size_t * symbol_size = (size_t *) map_iter;
-    map_iter += sizeof(size_t);
-    char * symbol = (char *) map_iter;
-    map_iter += *symbol_size;
-
-    void * handle = dlopen(filename, RTLD_LAZY | RTLD_LOCAL);
+    void * handle = dlopen(header->filename, RTLD_LAZY | RTLD_LOCAL);
     if (!handle)
-      errx(1, "Dynamically loading %s: %s", filename, dlerror());
+      errx(1, "Dynamically loading %s: %s", header->filename, dlerror());
 
-    typedef void (*activation)(int epoll_fd, void * args);
+    typedef void (*activation)(int epoll_fd, struct activation_header_sizes * sizes);
     dlerror();
-    activation act = (activation) dlsym(handle, symbol);
+    activation act = (activation) dlsym(handle, header->symbol);
     if (!act) {
       char * err_str = dlerror();
       if (!err_str)
-        errx(1, "Symbol %s from %s is NULL", symbol, filename);
+        errx(1, "Symbol %s from %s is NULL", header->symbol, header->filename);
       else
-        errx(1, "Loading symbol %s from %s: %s", symbol, filename, err_str);
+        errx( 1
+            , "Loading symbol %s from %s: %s"
+            , header->symbol
+            , header->filename
+            , err_str
+            );
     }
 
-    act(epoll_fd, map_iter);
+    act(epoll_fd, sizes);
 
-    if (munmap(map, st.st_size) == -1)
+    if (munmap(sizes, st.st_size) == -1)
       err(1, "Unmapping %s", arg_file);
   }
 
