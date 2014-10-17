@@ -23,10 +23,10 @@ in { url, rev, sha256 }: derivation {
     mkdir $out
     mkdir download
     cd download
-    git clone ${url}
+    git clone --bare ${url}
     cd *
     git archive --format=tar ${rev} | tar -x -C $out
-    rm $out/.gitignore
+    rm -f $out/.gitignore
   '';
 
   impureEnvVars = [
