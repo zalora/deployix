@@ -96,12 +96,20 @@ static void handle_term(int ignored) {
   siglongjmp(env, 1);
 }
 
+static void update_last_run(time_t * last_run) {
+  sigset_t full_set;
+  sigfillset(&full_set);
+  sigset_t old;
+  sigprocmask(SIG_SETMASK, &full_set, &old);
+  time(last_run);
+  msync(last_run, sizeof *last_run, MS_SYNC);
+  sigprocmask(SIG_SETMASK, &old, NULL);
+}
+
 void loop(struct settings_header * hdr, time_t * last_run) {
   typedef settings(hdr->path_size, hdr->prog_size, hdr->state_file_size) settings_t;
   settings_t * set = (settings_t *) hdr;
 
-  sigset_t full_set;
-  sigfillset(&full_set);
   volatile pid_t child = 0;
 
   if (sigsetjmp(env, 0) == 1) {
@@ -122,6 +130,9 @@ void loop(struct settings_header * hdr, time_t * last_run) {
   if (sigaction(SIGTERM, &act, NULL) == -1)
     err(1, "setting SIGTERM handler");
 
+  if (!*last_run)
+    update_last_run(last_run);
+
   while (1) {
     time_t now = time(NULL);
     struct tm * now_tm = gmtime(&now);
@@ -135,14 +146,6 @@ void loop(struct settings_header * hdr, time_t * last_run) {
         (now_tm->tm_hour == hdr->hour && now_tm->tm_min < hdr->min))
       --prev_tm.tm_mday;
     time_t prev = mktime(&prev_tm);
-
-    if (!*last_run) {
-      sigset_t old;
-      sigprocmask(SIG_SETMASK, &full_set, &old);
-      *last_run = prev;
-      msync(last_run, sizeof *last_run, MS_SYNC);
-      sigprocmask(SIG_SETMASK, &old, NULL);
-    }
 
     struct tm next_tm;
     memmove(&next_tm, now_tm, sizeof next_tm);
@@ -176,14 +179,7 @@ void loop(struct settings_header * hdr, time_t * last_run) {
 
       child = 0;
 
-      sigset_t old;
-      sigprocmask(SIG_SETMASK, &full_set, &old);
-      time(last_run);
-      msync(last_run, sizeof *last_run, MS_SYNC);
-      sigprocmask(SIG_SETMASK, &old, NULL);
-
-      if (*last_run < next)
-        sleep(next - *last_run);
+      update_last_run(last_run);
     } else
       sleep(next - now);
   }
