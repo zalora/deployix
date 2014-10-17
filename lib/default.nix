@@ -82,5 +82,12 @@ let
 
       AF_INET6 = 1;
     };
+
+    # Service auto-restart modes
+    restart-modes = {
+      no = 0; # Don't automatically restart
+
+      always = 1; # Restart whenever it exits
+    };
   };
 in lib

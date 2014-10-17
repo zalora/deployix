@@ -14,6 +14,8 @@ Arguments
 * `settings`: Optional, set of general execution environment flags:
   * `user`: The user to switch to.
   * `group`: The group to switch to.
+  * `restart`: The restart mode (see `restart-modes` in
+     `<defnix/lib/default.nix>`). Defaults to `restart-modes.no`.
 
 Exit codes
 ----------

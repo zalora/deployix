@@ -1,7 +1,7 @@
 defnix:
 
 name: let
-  inherit (defnix.lib) join map-attrs-to-list;
+  inherit (defnix.lib) join map-attrs-to-list restart-modes;
 
   inherit (defnix.eval-support) calculate-id;
 
@@ -11,6 +11,8 @@ name: let
     user = settings.user or null;
 
     group = settings.group or null;
+
+    restart = settings.restart or restart-modes.no;
 
     needs-envp = envp != null;
 
@@ -31,7 +33,27 @@ name: let
     setgid = if group == null
       then "0"
       else "setgid(${toString (calculate-id group)})";
+
+    fork = if restart == restart-modes.no
+      then ""
+      else ''
+        again:
+          switch (vfork()) {
+            case -1:
+              err(212, "forking to execute %s", filename);
+            case 0:
+              break;
+            default: {
+              int status;
+              while(wait(&status) == -1);
+              goto again;
+            }
+          }
+      '';
   in (compile-c [] (write-file "${name}.c" ''
+    #define _GNU_SOURCE
+    #include <sys/wait.h>
+    #include <errno.h>
     #include <unistd.h>
     #include <err.h>
 
@@ -49,6 +71,7 @@ name: let
         err(213, "Setting group id");
       if (${setuid} == -1)
         err(213, "Setting user id");
+      ${fork}
       ${exec-fun};
       err(212, "executing %s", filename);
     }
