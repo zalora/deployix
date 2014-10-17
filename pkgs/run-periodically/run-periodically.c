@@ -136,6 +136,14 @@ void loop(struct settings_header * hdr, time_t * last_run) {
       --prev_tm.tm_mday;
     time_t prev = mktime(&prev_tm);
 
+    if (!*last_run) {
+      sigset_t old;
+      sigprocmask(SIG_SETMASK, &full_set, &old);
+      *last_run = prev;
+      msync(last_run, sizeof *last_run, MS_SYNC);
+      sigprocmask(SIG_SETMASK, &old, NULL);
+    }
+
     struct tm next_tm;
     memmove(&next_tm, now_tm, sizeof next_tm);
     next_tm.tm_hour = hdr->hour;
