@@ -13,7 +13,15 @@ lib: let
     sha256 = "8676c5d51578b7ff9208ef0613445f71a3841902a435f12d4af6d9ac23bea053";
   }) { inherit system; };
 
-  haskellPackages-499c510 = system: (nixpkgs-499c510 system).haskellPackages;
+  nixpkgs-57eb7f1 = system: import (fetchgit-bootstrap {
+    url = "git://github.com/NixOS/nixpkgs.git";
+
+    rev = "57eb7f107d642f47423045e460eeb53eef74acee";
+
+    sha256 = "9afa214cb2e616b6e7551c840d8c42e4c2359db1d62e0c8a2985f6929967fa70";
+  }) { inherit system; };
+
+  haskellPackages-57eb7f1 = system: (nixpkgs-57eb7f1 system).haskellPackages;
 
   inherit-pkgs = lib.map-attrs (pkg: pkgs-fun: defnix:
     (pkgs-fun defnix.config.target-system).${pkg}
@@ -40,6 +48,6 @@ in (inherit-pkgs {
   binutils = nixpkgs-499c510;
 }) // {
   haskellPackages = inherit-pkgs {
-    ghcPlain = haskellPackages-499c510;
+    ghcPlain = haskellPackages-57eb7f1;
   };
 }
