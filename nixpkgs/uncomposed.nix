@@ -1,39 +1,5 @@
 lib: let
-  nix-deps = import <nix/config.nix>;
-
-  fetchgit-bootstrap = { url, rev, sha256 }: derivation {
-    name = "git-export";
-
-    builder = nix-deps.shell;
-
-    args = [ "-e" "-c" "eval \"$script\"" ];
-
-    system = builtins.currentSystem;
-
-    PATH = builtins.getEnv "PATH";
-
-    script = ''
-      mkdir $out
-      mkdir download
-      cd download
-      git clone ${url}
-      cd *
-      git archive --format=tar ${rev} | tar -x -C $out
-      rm $out/.gitignore
-    '';
-
-    impureEnvVars = [
-      "http_proxy" "https_proxy" "ftp_proxy" "all_proxy" "no_proxy"
-    ];
-
-    preferLocalBuild = true;
-
-    outputHashAlgo = "sha256";
-
-    outputHash = sha256;
-
-    outputHashMode = "recursive";
-  };
+  fetchgit-bootstrap = import ./fetchgit-bootstrap.nix;
 
   /* Note! When updating nixpkgs, please only only update attribtues in
    * pkgs that you've actually tested, and keep the rest at the version of
