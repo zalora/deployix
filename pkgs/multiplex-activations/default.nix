@@ -9,7 +9,6 @@ activations: assert activations != []; let
 
   multiplex-activations = compile-c [
     "-ldl"
-    "-Wl,-s"
     ''-DACTIVATION_HEADER="${activation-header}"''
   ] ./multiplex-activations.c;
 

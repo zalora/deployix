@@ -6,6 +6,9 @@ lib: (lib.recursive-import ./.) // {
   # See http://nixos.org/patchelf.html
   patchelf = defnix: defnix.nixpkgs.patchelf;
 
+  # Binary utilities
+  binutils = defnix: defnix.nixpkgs.binutils;
+
   # Haskell compiler
   ghc = defnix: "${defnix.nixpkgs.haskellPackages.ghcPlain}/bin/ghc";
 }

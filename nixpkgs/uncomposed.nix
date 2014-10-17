@@ -70,6 +70,8 @@ in (inherit-pkgs {
   php = nixpkgs-499c510;
 
   nginx = nixpkgs-499c510;
+
+  binutils = nixpkgs-499c510;
 }) // {
   haskellPackages = inherit-pkgs {
     ghcPlain = haskellPackages-499c510;

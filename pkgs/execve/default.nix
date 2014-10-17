@@ -31,7 +31,7 @@ name: let
     setgid = if group == null
       then "0"
       else "setgid(${toString (calculate-id group)})";
-  in (compile-c [ "-Wl,-s" ] (write-file "${name}.c" ''
+  in (compile-c [] (write-file "${name}.c" ''
     #include <unistd.h>
     #include <err.h>
 

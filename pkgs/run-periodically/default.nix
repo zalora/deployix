@@ -5,7 +5,7 @@ defnix:
 
   inherit (defnix.pkgs) execve;
 
-  run-periodically = compile-c [ "-Wl,-s" ] ./run-periodically.c;
+  run-periodically = compile-c [] ./run-periodically.c;
 
   path = prog.outPath or prog;
 

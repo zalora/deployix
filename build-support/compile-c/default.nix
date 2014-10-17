@@ -1,7 +1,7 @@
 defnix:
 
 flags: c: let
-  inherit (defnix.build-support) output-to-argument cc patchelf;
+  inherit (defnix.build-support) output-to-argument cc patchelf binutils;
 
   inherit (defnix.pkgs) coreutils;
 
@@ -9,10 +9,10 @@ flags: c: let
 
   base = c.name or (baseNameOf (toString c));
 
-  base-flags = [ "-Wall" "-Werror" "-Wl,-S" "-O3" "-std=c11" "-o" "@out" ];
+  base-flags = [ "-Wall" "-Werror" "-O3" "-std=c11" "-o" "@out" ];
 
-  compile-and-patchelf = output-to-argument (derivation {
-    name = "compile-and-patchelf";
+  compile-strip-and-patchelf = output-to-argument (derivation {
+    name = "compile-strip-and-patchelf";
 
     system = target-system;
 
@@ -21,9 +21,10 @@ flags: c: let
     PATH = "${coreutils}/bin";
 
     args = base-flags ++ [
-      ./compile-and-patchelf.c
+      ./compile-strip-and-patchelf.c
       "-DCOMPILER=\"${cc}\""
       "-DPATCHELF=\"${patchelf}/bin/patchelf\""
+      "-DSTRIP=\"${binutils}/bin/strip\""
     ];
   });
 in output-to-argument (derivation {
@@ -31,7 +32,7 @@ in output-to-argument (derivation {
 
   system = target-system;
 
-  builder = compile-and-patchelf;
+  builder = compile-strip-and-patchelf;
 
   PATH = "${coreutils}/bin";
 

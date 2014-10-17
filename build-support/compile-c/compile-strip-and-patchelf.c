@@ -15,12 +15,26 @@ int main(int argc, char ** argv) {
   }
 
   int status;
-  if (wait(&status) == -1)
-    err(1, "Waiting for child");
+  while (wait(&status) == -1);
 
   if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
     exit(WEXITSTATUS(status));
 
-  execl(PATCHELF, PATCHELF, "--shrink-rpath", getenv("out"), NULL);
+  char * out = getenv("out");
+
+  switch (vfork()) {
+    case -1:
+      err(1, "Forking to call " STRIP);
+    case 0:
+      execl(STRIP, "strip", "--strip-all", out, NULL);
+      _exit(212);
+  }
+
+  while (wait(&status) == -1);
+
+  if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
+    exit(WEXITSTATUS(status));
+
+  execl(PATCHELF, "patchelf", "--shrink-rpath", out, NULL);
   err(1, "Executing " PATCHELF);
 }
