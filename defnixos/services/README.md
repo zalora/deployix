@@ -20,6 +20,20 @@ It is expected that service manager implementations will use the semantic
 information provided by `on-demand` and `initializer` to sensibly order
 service startup.
 
+Service directory
+------------------
+
+Each service starts in a working directory that is guaranteed to be different
+from the initial working directory of services with different names and the
+same as services with the same name. This is to facilitate:
+
+* Communication between the service and the service manager (e.g.
+  `Readiness notifications` as described below)
+* Communication between multiple incarnations of the same service (e.g.
+  to implement socket handoff to allow 0-downtime service restart)
+
+The service directory should be assumed to be ephemeral between boots.
+
 Readiness notifications
 -----------------------
 
