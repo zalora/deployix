@@ -1,7 +1,21 @@
 { config, lib, pkgs, ... }: let
   cfg = config.defnixos;
 
-  defnix = import ../../. { config.target-system = pkgs.system; };
+  pkgs-native = import pkgs.path {};
+
+  nix-exec = (import (pkgs-native.fetchgit {
+    url = "git://github.com/NixOS/nixpkgs.git";
+
+    rev = "c8be814f254311ca454844bdd34fd7206e801399";
+
+    sha256 = "0db22de19145f6859b8e5b40e4904c81e5fe4b00a86fbe8db684e68c25d3c0dd";
+  }) {}).nix-exec;
+
+  nix-exec-lib = import (nix-exec + "/share/nix/lib.nix");
+
+  unsafe-perform-io = import (nix-exec + "/share/nix/unsafe-perform-io.nix");
+
+  defnix = unsafe-perform-io (import ../../. nix-exec-lib { config.target-system = pkgs.system; });
 
   inherit (lib) types mkOption mapAttrsToList;
 
