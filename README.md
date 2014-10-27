@@ -8,8 +8,10 @@ community but don't fit into upstream `nixpkgs` for whatever reason.
 Additionally, it is the repository for `defnixos`, our service-oriented
 deployment specification library.
 
-See `<defnix/defnixos/nixos-wrappers/ipsec-wrapper.nix>` for an example
-of how you can use `defnix`.
+Defnix uses [nix-exec][1]. Its `default.nix` requires you to pass in the
+`nix-exec` lib and returns a `nix-exec` IO value. See
+`<defnix/defnixos/nixos-wrappers/ipsec-wrapper.nix>` for an example of how you
+can use `defnix` when not using `nix-exec` for evaluation.
 
 Organization
 -------------
@@ -94,3 +96,5 @@ by the component. For example, if we ever want to make the set of cflags used
 globally for `compile-c` to be configurable, we should use something like
 `defnix.config.build-support.compile-c.cflags or default-flags` in
 `<defnix/build-support/compile-c/default.nix>`.
+
+[1]: https://github.com/shlevy/nix-exec
