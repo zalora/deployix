@@ -52,6 +52,12 @@ in lib.nix-exec.map (sets: (inherit-pkgs {
   nginx = sets.nixpkgs-499c510;
 
   binutils = sets.nixpkgs-499c510;
+
+  nixUnstable = sets.nixpkgs-c8be814;
+
+  boehmgc = sets.nixpkgs-c8be814;
+
+  gnupg = sets.nixpkgs-c8be814;
 }) // {
   haskellPackages = inherit-pkgs {
     ghcPlain = haskellPackages sets.nixpkgs-c8be814;

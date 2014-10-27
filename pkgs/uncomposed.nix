@@ -19,4 +19,13 @@ lib: (lib.recursive-import ./.) // {
 
   # The nginx web server
   nginx = defnix: defnix.nixpkgs.nginx;
+
+  # The nix package manager
+  nix = defnix: defnix.nixpkgs.nixUnstable;
+
+  # The boehm garbage collector
+  boehmgc = defnix: defnix.nixpkgs.boehmgc;
+
+  # The GNU privacy guard
+  gnupg = defnix: defnix.nixpkgs.gnupg;
 }

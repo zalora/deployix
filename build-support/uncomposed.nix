@@ -2,6 +2,9 @@ lib: (lib.recursive-import ./.) // {
   # C compiler
   cc = defnix: "${defnix.nixpkgs.gcc}/bin/cc";
 
+  # C++ compiler
+  cxx = defnix: "${defnix.nixpkgs.gcc}/bin/c++";
+
   # Utility to modify the dynamic linker and RPATH of elf executables
   # See http://nixos.org/patchelf.html
   patchelf = defnix: defnix.nixpkgs.patchelf;

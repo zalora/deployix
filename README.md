@@ -22,6 +22,7 @@ Organization
 * `nixpkgs`: Upstream dependencies from `nixpkgs`
 * `eval-support`: Functions for calculation at evaluation time that cannot be
   done in pure nix (i.e. require import from derivations)
+* `nix-exec`: Native `nix-exec` functions
 * `build-support`: Functions and packages expected to be used directly only
   at build time (e.g. compilers)
 * `pkgs`: Functions and packages expected to be used at runtime
