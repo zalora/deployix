@@ -3,8 +3,12 @@ defnix:
 let
   inherit (defnix.pkgs) strongswan kmod execve generate-certs;
 
-  secrets-file = service-name: builtins.toFile "ipsec.secrets"
-    ": P12 /etc/x509/${service-name}.p12 \"fakepass\"";
+  secrets-file = service-name: cert-archive: let
+    archive = if cert-archive == null
+      then "/etc/x509/${service-name}.p12"
+      else cert-archive;
+  in builtins.toFile "ipsec.secrets"
+    ": P12 ${cert-archive} \"fakepass\"";
 
   #!!! TODO: use strongswan user
   config-file = ca: outgoing-hosts: builtins.toFile "ipsec.conf" ''
@@ -25,11 +29,11 @@ let
       auto=add
   '';
 
-  strongswan-conf = ca: outgoing-hosts: service-name: builtins.toFile "strongswan.conf" ''
+  strongswan-conf = ca: outgoing-hosts: service-name: cert-archive: builtins.toFile "strongswan.conf" ''
     charon {
       plugins {
         stroke {
-          secrets_file = ${secrets-file service-name}
+          secrets_file = ${secrets-file service-name cert-archive}
         }
       }
     }
@@ -43,6 +47,7 @@ in
 { outgoing-hosts ? []         # Hosts to make outgoing connections to
 , ca                          # The root CA certificate
 , service-name ? "strongswan" # The name of this service in the global service namespace
+, cert-archive ? null         # The pkcs12 archive containing the cert and private key
 }:
 
 {
@@ -52,11 +57,12 @@ in
     argv = [ "starter" "--nofork" ];
 
     envp = {
-      STRONGSWAN_CONF = strongswan-conf ca outgoing-hosts service-name;
+      STRONGSWAN_CONF = strongswan-conf ca outgoing-hosts service-name cert-archive;
 
       PATH = "${kmod}/bin:${kmod}/sbin:${strongswan}/bin:${strongswan}/sbin";
     };
   };
 
+} // (if cert-archive == null then {
   initializer = generate-certs service-name;
-}
+} else {})
