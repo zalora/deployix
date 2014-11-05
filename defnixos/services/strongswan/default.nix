@@ -16,7 +16,7 @@ let
       leftid=it-services@zalora.com
       type=transport
       auto=add
-    ${toString (defnix.lib.imap (idx: host: ''
+    ${defnix.lib.join "" (defnix.lib.imap (idx: host: ''
       conn outbound-${toString idx}
         leftid=it-services@zalora.com
         right=${host}
