@@ -27,7 +27,7 @@ in {
     defnixos.strongswan-service = mkOption {
       description = "An already-composed strongswan defnixos service function";
 
-      default = defnix.defnixos.services.strongswan;
+      default = cfg.defnix.defnixos.services.strongswan;
 
       type = types.uniq types.unspecified;
     };
@@ -35,7 +35,7 @@ in {
     defnixos.services-to-nixos-config = mkOption {
       description = "An already-composed services-to-nixos-config defnixos library function";
 
-      default = defnix.defnixos.nixos-wrappers.services-to-nixos-config;
+      default = cfg.defnix.defnixos.nixos-wrappers.services-to-nixos-config;
 
       type = types.uniq types.unspecified;
     };
@@ -69,6 +69,14 @@ in {
 
       description = "Defnixos services to run on the machine.";
     };
+
+    defnixos.defnix = mkOption {
+      default = defnix;
+
+      type = types.uniq types.attrs;
+
+      description = "The composed defnix set to use.";
+    };
   };
 
   config = {
@@ -76,7 +84,7 @@ in {
 
     users.extraUsers = builtins.listToAttrs (map (name: {
       inherit name;
-      value.uid = defnix.eval-support.calculate-id name;
+      value.uid = cfg.defnix.eval-support.calculate-id name;
     }) cfg.users);
   };
 }
