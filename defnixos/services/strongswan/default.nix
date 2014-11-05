@@ -8,7 +8,7 @@ let
       then "/etc/x509/${service-name}.p12"
       else cert-archive;
   in builtins.toFile "ipsec.secrets"
-    ": P12 ${cert-archive} \"fakepass\"";
+    ": P12 ${archive} \"fakepass\"";
 
   #!!! TODO: use strongswan user
   config-file = ca: outgoing-hosts: builtins.toFile "ipsec.conf" ''
