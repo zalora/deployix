@@ -10,7 +10,7 @@ deployment specification library.
 
 Defnix uses [nix-exec][1]. Its `default.nix` requires you to pass in the
 `nix-exec` lib and returns a `nix-exec` IO value. See
-`<defnix/defnixos/nixos-wrappers/ipsec-wrapper.nix>` for an example of how you
+`<defnix/simple.nix>` for an example of how you
 can use `defnix` when not using `nix-exec` for evaluation.
 
 Organization
