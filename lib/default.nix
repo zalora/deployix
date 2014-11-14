@@ -98,9 +98,9 @@ nix-exec-lib: let
       # Take a set whose values are all monadic and return a monadic value
       # that yields a set whose values are the results of running the
       # corresponding values in the original set
-      # sequenceAttrs :: Map String (m a) -> m (Map String a), where 'a' is
+      # sequence-attrs :: Map String (m a) -> m (Map String a), where 'a' is
       # the sum type over all nix types.
-      sequenceAttrs = mset: nix-exec-lib.map builtins.listToAttrs (
+      sequence-attrs = mset: nix-exec-lib.map builtins.listToAttrs (
         lib.fold (name: acc: bind acc (acc:
           lib.nix-exec.map (value: [ { inherit name value; } ] ++ acc) mset.${name}
         )) (lib.nix-exec.unit []) (builtins.attrNames mset)

@@ -1,7 +1,7 @@
 lib: let
   inherit (lib) nix-exec;
 
-  inherit (nix-exec) sequenceAttrs;
+  inherit (nix-exec) sequence-attrs;
 
   inherit (nix-exec.builtins) fetchgit;
 
@@ -9,7 +9,7 @@ lib: let
    * pkgs that you've actually tested, and keep the rest at the version of
    * nixpkgs they're currently using
    */
-  nixpkgs-sets = sequenceAttrs {
+  nixpkgs-sets = sequence-attrs {
     nixpkgs-499c510 = nix-exec.map (src:
       let fn = import src; in system: fn { inherit system; }
     ) (fetchgit {
