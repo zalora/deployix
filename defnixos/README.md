@@ -17,8 +17,11 @@ services to depend on secure ipsec tunnels to other hosts.
 generalization of the socket activation provided by `inetd` or `systemd`, these
 functions allow starting a service when arbitrary conditions are met.
 
-It is expected in the future that deployment tools will exist that understand
-defnix services 'natively'.
+Services can be grouped together into `functionalities`, and there are a
+number of possibility `functionality implementations` that can take a set
+of `functionalities` and actualize them in some way. For example, we currently
+have `nixops-deploy` which deploys a set of functionalities to a nixops
+machine.
 
-Please see the READMEs in the `services` and `activations` directories for more
-details.
+Please see the READMEs in the `services`, `activations`, and
+`functionality-implementations` directories for more details.

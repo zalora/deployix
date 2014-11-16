@@ -36,7 +36,7 @@ extern "C" void nix_spawn( nix::EvalState & state
                                             , true
                                             , false
                                             ));
-    argv_ptr[i] = argv_list.back().c_str();
+    argv_ptr[i + 1] = argv_list.back().c_str();
   }
   auto argv = argv_ptr.get();
 

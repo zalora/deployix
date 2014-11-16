@@ -58,6 +58,10 @@ in lib.nix-exec.map (sets: (inherit-pkgs {
   boehmgc = sets.nixpkgs-c8be814;
 
   gnupg = sets.nixpkgs-c8be814;
+
+  nix-exec = sets.nixpkgs-c8be814;
+
+  nixops = sets.nixpkgs-c8be814;
 }) // {
   haskellPackages = inherit-pkgs {
     ghcPlain = haskellPackages sets.nixpkgs-c8be814;
