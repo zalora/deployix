@@ -22,6 +22,7 @@ int main(int argc, char ** argv) {
 
   char * out = getenv("out");
 
+#ifdef STRIP
   switch (vfork()) {
     case -1:
       err(1, "Forking to call " STRIP);
@@ -34,7 +35,12 @@ int main(int argc, char ** argv) {
 
   if (!WIFEXITED(status) || WEXITSTATUS(status) != 0)
     exit(WEXITSTATUS(status));
+#endif
 
+#ifdef PATCHELF
   execl(PATCHELF, "patchelf", "--shrink-rpath", out, NULL);
   err(1, "Executing " PATCHELF);
+#else
+  return 0;
+#endif
 }

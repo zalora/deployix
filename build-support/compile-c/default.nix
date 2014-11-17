@@ -23,9 +23,10 @@ flags: c: let
     args = base-flags ++ [
       ./compile-strip-and-patchelf.c
       "-DCOMPILER=\"${cc}\""
+    ] ++ (if target-system == "x86_64-darwin" then [] else [
       "-DPATCHELF=\"${patchelf}/bin/patchelf\""
       "-DSTRIP=\"${binutils}/bin/strip\""
-    ];
+    ]);
   });
 in output-to-argument (derivation {
   name = builtins.substring 0 (builtins.stringLength base - 2) base;
