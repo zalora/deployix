@@ -25,6 +25,14 @@ lib: let
 
       rev = "c8be814f254311ca454844bdd34fd7206e801399";
     });
+
+    nixpkgs-8b9b0d9 = nix-exec.map (src:
+      let fn = import src; in system: fn { inherit system; }
+    ) (fetchgit {
+      url = "git://github.com/NixOS/nixpkgs.git";
+
+      rev = "8b9b0d95a08706aa0757150d5fb310d545ef9176";
+    });
   };
 
   haskellPackages = pkgs-fun: system: (pkgs-fun system).haskellPackages;
@@ -53,15 +61,15 @@ in lib.nix-exec.map (sets: (inherit-pkgs {
 
   binutils = sets.nixpkgs-499c510;
 
-  nixUnstable = sets.nixpkgs-c8be814;
+  nixUnstable = sets.nixpkgs-8b9b0d9;
 
-  boehmgc = sets.nixpkgs-c8be814;
+  boehmgc = sets.nixpkgs-8b9b0d9;
 
   gnupg = sets.nixpkgs-c8be814;
 
-  nix-exec = sets.nixpkgs-c8be814;
+  nix-exec = sets.nixpkgs-8b9b0d9;
 
-  nixops = sets.nixpkgs-c8be814;
+  nixops = sets.nixpkgs-8b9b0d9;
 }) // {
   haskellPackages = inherit-pkgs {
     ghcPlain = haskellPackages sets.nixpkgs-c8be814;
