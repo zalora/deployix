@@ -1,7 +1,7 @@
 defnix:
 
 flags: cc: let
-  inherit (defnix.build-support) compile-c cxx patchelf binutils output-to-argument;
+  inherit (defnix.build-support) compile-c cxx patchelf binutils output-to-argument libcxx;
 
   inherit (defnix.pkgs) coreutils;
 
@@ -9,7 +9,11 @@ flags: cc: let
 
   base = cc.name or (baseNameOf (toString cc));
 
-  base-flags = [ "-Wall" "-Werror" "-O3" "-std=c++11" "-o" "@out" ];
+  base-flags = [ "-Wall" "-Werror" "-O3" "-std=c++11" "-o" "@out" ] ++ (
+    if target-system == "x86_64-darwin"
+      then [ "-stdlib=libc++" "-L${libcxx}/lib" ]
+      else []
+  );
 
   compile-strip-and-patchelf = compile-c ([
     "-DCOMPILER=\"${cxx}\""

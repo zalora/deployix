@@ -41,7 +41,9 @@ lib: let
     (pkgs-fun defnix.config.target-system).${pkg}
   );
 in lib.nix-exec.map (sets: (inherit-pkgs {
-  gcc = sets.nixpkgs-499c510;
+  gcc = sets.nixpkgs-8b9b0d9;
+
+  libcxx = sets.nixpkgs-8b9b0d9;
 
   coreutils = sets.nixpkgs-499c510;
 
