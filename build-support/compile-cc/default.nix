@@ -14,9 +14,7 @@ flags: cc: let
   compile-strip-and-patchelf = compile-c [
     "-DCOMPILER=\"${cxx}\""
     "-DPATCHELF=\"${patchelf}/bin/patchelf\""
-    "-DSTRIP=\"${if target-system == "x86_64-darwin"
-      then "${coreutils}/bin/true"
-      else "${binutils}/bin/strip"}\""
+    "-DSTRIP=\"${binutils}/bin/strip\""
   ] ../compile-c/compile-strip-and-patchelf.c;
 in output-to-argument (derivation {
   name = builtins.substring 0 (builtins.stringLength base - 3) base;
