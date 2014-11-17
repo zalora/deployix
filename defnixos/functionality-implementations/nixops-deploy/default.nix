@@ -9,6 +9,10 @@ defnix:
 
   inherit (defnix.lib.nix-exec) bind;
 
+  # Our generated nix expression will reference .drvs, but we don't
+  # want to require building their outputs to write the expressions
+  discard = builtins.unsafeDiscardOutputDependency;
+
   expr = defnix.build-support.write-file "deployment.nix" ''
     {
       machine = { pkgs, ... }: let
@@ -23,11 +27,11 @@ defnix:
         svcs = {
           ${join "\n          " (map-attrs-to-list (name: { service, ... }:
             "\"${name}\" = {\n        " + "start = (import ${
-              service.start.drvPath
+              discard service.start.drvPath
             }).${service.start.outputName};\n        " + "initializer = ${
               if service ? initializer
                 then "(import ${
-                  service.initializer.drvPath
+                  discard service.initializer.drvPath
                 }).${service.initializer.outputName}"
                 else "null"
             };\n        " + "on-demand = ${if service.on-demand or false
