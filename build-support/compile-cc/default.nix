@@ -11,7 +11,11 @@ flags: cc: let
 
   base-flags = [ "-Wall" "-Werror" "-O3" "-std=c++11" "-o" "@out" ] ++ (
     if target-system == "x86_64-darwin"
-      then [ "-stdlib=libc++" "-L${libcxx}/lib" ]
+      then [
+        "-stdlib=libc++"
+        "-L${libcxx}/lib"
+        "-isystem ${libcxx}/include/c++/v1"
+      ]
       else []
   );
 
