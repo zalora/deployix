@@ -24,7 +24,9 @@ flags: c: let
       ./compile-strip-and-patchelf.c
       "-DCOMPILER=\"${cc}\""
       "-DPATCHELF=\"${patchelf}/bin/patchelf\""
-      "-DSTRIP=\"${binutils}/bin/strip\""
+      "-DSTRIP=\"${if target-system == "x86_64-darwin"
+        then "${coreutils}/bin/true"
+        else "${binutils}/bin/strip"}\""
     ];
   });
 in output-to-argument (derivation {
