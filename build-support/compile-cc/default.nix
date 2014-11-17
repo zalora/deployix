@@ -20,6 +20,12 @@ flags: cc: let
 in output-to-argument (derivation {
   name = builtins.substring 0 (builtins.stringLength base - 3) base;
 
+  NIX_DONT_SET_RPATH = if target-system == "x86_64-darwin"
+    then "1"
+    else null;
+
+  __ignoreNulls = true;
+
   system = target-system;
 
   builder = compile-strip-and-patchelf;
