@@ -14,7 +14,7 @@ flags: cc: let
       then [
         "-stdlib=libc++"
         "-L${libcxx}/lib"
-        "-isystem ${libcxx}/include/c++/v1"
+        "-isystem" "${libcxx}/include/c++/v1"
       ]
       else []
   );
