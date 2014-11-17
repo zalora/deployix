@@ -22,11 +22,14 @@ defnix:
 
         svcs = {
           ${join "\n          " (map-attrs-to-list (name: { service, ... }:
-            "\"${name}\" = {\n        " + "start = builtins.storePath ${
-              service.start
-            };\n        " + "initializer = ${if service ? initializer
-              then "builtins.storePath ${service.initializer}"
-              else "null"
+            "\"${name}\" = {\n        " + "start = (import ${
+              service.start.drvPath
+            }).${service.start.outputName};\n        " + "initializer = ${
+              if service ? initializer
+                then "(import ${
+                  service.initializer.drvPath
+                }).${service.initializer.outputName}"
+                else "null"
             };\n        " + "on-demand = ${if service.on-demand or false
               then "true"
               else "false"
