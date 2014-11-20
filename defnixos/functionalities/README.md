@@ -1,7 +1,7 @@
-Functionality implementations
+Functionalities
 ==============================
 
-These functions take a set of functionalities and deploy them in some way.
+Functions to handle functionalities.
 
 Functionalities
 ----------------

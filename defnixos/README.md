@@ -18,8 +18,8 @@ generalization of the socket activation provided by `inetd` or `systemd`, these
 functions allow starting a service when arbitrary conditions are met.
 
 Services can be grouped together into `functionalities`, and there are a
-number of possibility `functionality implementations` that can take a set
-of `functionalities` and actualize them in some way. For example, we currently
+number of possibility functionality implementations that can take a set
+of functionalities and actualize them in some way. For example, we currently
 have `nixops-deploy` which deploys a set of functionalities to a nixops
 machine.
 
