@@ -1,7 +1,7 @@
 defnix:
 
 { functionalities, target, name, nixpkgs }: let
-  inherit (defnix.nix-exec.pkgs) nixops nix-exec;
+  inherit (defnix.native.nix-exec.pkgs) nixops nix-exec;
 
   inherit (defnix.nix-exec) spawn;
 
