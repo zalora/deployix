@@ -13,7 +13,7 @@ defnix:
   # want to require building their outputs to write the expressions
   discard = builtins.unsafeDiscardOutputDependency;
 
-  expr = defnix.build-support.write-file "deployment.nix" ''
+  expr = defnix.native.build-support.write-file "deployment.nix" ''
     {
       machine = { pkgs, ... }: let
         nix-exec-lib = import ${nix-exec}/share/nix/lib.nix;
