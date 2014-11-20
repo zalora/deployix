@@ -1,11 +1,9 @@
 defnix: let
   inherit (defnix.pkgs) sh;
 
-  inherit (defnix.config) target-system;
+  inherit (defnix.config) system;
 in name: env: script: derivation (env // {
-  inherit name script;
-
-  system = target-system;
+  inherit name script system;
 
   builder = sh;
 

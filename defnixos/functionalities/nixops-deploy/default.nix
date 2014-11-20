@@ -21,7 +21,7 @@ defnix:
         unsafe-perform-io = import ${nix-exec}/share/nix/unsafe-perform-io.nix;
 
         defnix = unsafe-perform-io (import ${toString ../../..} nix-exec-lib {
-          config.target-system = pkgs.system;
+          config.system = pkgs.system;
         });
 
         svcs = {

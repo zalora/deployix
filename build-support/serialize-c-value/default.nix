@@ -3,7 +3,7 @@ defnix:
 { name, header ? null, type, value, flags ? [] }:  let
   inherit (defnix.lib) join map-attrs-to-list imap;
 
-  inherit (defnix.config) target-system;
+  inherit (defnix.config) system;
 
   inherit (defnix.build-support) write-file compile-c;
 
@@ -56,9 +56,7 @@ defnix:
     }
   '';
 in derivation {
-  inherit name;
+  inherit name system;
 
   builder = compile-c flags c;
-
-  system = target-system;
 }

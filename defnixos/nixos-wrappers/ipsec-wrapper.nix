@@ -15,7 +15,7 @@
 
   unsafe-perform-io = import (nix-exec + "/share/nix/unsafe-perform-io.nix");
 
-  defnix = unsafe-perform-io (import ../../. nix-exec-lib { config.target-system = pkgs.system; });
+  defnix = unsafe-perform-io (import ../../. nix-exec-lib { config.system = pkgs.system; });
 
   inherit (lib) types mkOption mapAttrsToList;
 

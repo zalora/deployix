@@ -10,13 +10,18 @@ nix-exec-lib: let
       ) x else if has-overrides then overrides else x self;
   in go;
 in overrides@{ config ? {}, ... }: nix-exec-lib.map (uncomposed: let
-  self = (deep-call self uncomposed true overrides) // {
-    inherit lib;
+  call = self: isNative: (deep-call self uncomposed true overrides) // {
+    inherit lib native;
 
-    config = {
-      target-system = builtins.currentSystem;
-
-      eval-system = builtins.currentSystem;
-    } // config;
+    config = if isNative
+      then (config // {
+        system = builtins.currentSystem;
+      }) else config;
   };
+
+  native = call native true;
+
+  self = if (config.system or builtins.currentSystem) == builtins.currentSystem
+    then native
+    else call self false;
 in self) uncomposed

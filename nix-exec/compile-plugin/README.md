@@ -18,3 +18,5 @@ A monadic value that, when run, compiles `cc` with the flags needed to make it
 a DSO (and any additional `flags` passed in) and is otherwise equivalent to the
 result of calling the `dlopen` function in the `nix-exec` lib with the resultant
 DSO, `symbol`, and `arity` as its arguments.
+
+Properly uses the native versions of compiler and libraries.

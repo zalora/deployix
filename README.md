@@ -84,18 +84,28 @@ requires a `system` argument, but we don't want to have the set of packages
 from `nixpkgs` all be functions and have to pass `system` around every time we
 want to use one. Instead, `defnix.config` is used to hold configuration values
 in a global set that all packages can access. For example,
-`defnix.config.target-system` is used by `nixpkgs` to determine which system to
+`defnix.config.system` is used by `nixpkgs` to determine which system to
 import the `nixpkgs` checkout with, it is set to `builtins.currentSystem` by
 default but can be overridden in the call to `default.nix` (see
 `<defnix/defnixos/nixos-wrappers/ipsec-wrapper.nix>` for an example).
 
 Some configuration values affect many different components, such as,
-`target-system`, and these should be set with default values in the top-level
+`system`, and these should be set with default values in the top-level
 `default.nix`. Others are component-specific, and should be put into a
 component-specific namespace in `defnix.config` with default values handled
 by the component. For example, if we ever want to make the set of cflags used
 globally for `compile-c` to be configurable, we should use something like
 `defnix.config.build-support.compile-c.cflags or default-flags` in
 `<defnix/build-support/compile-c/default.nix>`.
+
+Native import
+-------------
+
+Because some functions in `defnix` (such as those in `nix-exec`) are meant to
+run native code on the evaluating machine, the `defnix.native` attribute points
+to an import of `defnix` with `config.system` set to `builtins.currentSystem`.
+Functions that need it should use `defnix.native` where relevant, so that the
+end user can just import `defnix` with `config.system` set to the *target*
+system and still evaluate everything on their native host.
 
 [1]: https://github.com/shlevy/nix-exec

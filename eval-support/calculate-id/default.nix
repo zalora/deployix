@@ -1,7 +1,7 @@
 defnix: let
-  inherit (defnix.build-support) compile-c;
+  inherit (defnix.native.build-support) compile-c;
 
-  inherit (defnix.config) eval-system target-system;
+  inherit (defnix.native.config) system;
 
   hardcodes = {
     root = 0;
@@ -22,12 +22,12 @@ defnix: let
 in
 
 # verify target-id-t et. al. if adding a new system
-assert builtins.elem target-system [ "x86_64-linux" "i686-linux" ];
+assert builtins.elem defnix.config.system [ "x86_64-linux" "i686-linux" ];
 
 name: hardcodes.${name} or (import (derivation {
   name = "${name}-id.nix";
 
-  system = eval-system;
+  inherit system;
 
   builder = calculate-id;
 
