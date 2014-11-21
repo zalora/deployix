@@ -3,49 +3,26 @@ defnix:
 { functionalities, target, name, nixpkgs }: let
   inherit (defnix.native.nix-exec.pkgs) nixops nix-exec;
 
+  inherit (defnix.native.build-support) write-file;
+
   inherit (defnix.nix-exec) spawn;
 
   inherit (defnix.lib) map-attrs-to-list join;
 
   inherit (defnix.lib.nix-exec) bind;
 
-  # Our generated nix expression will reference .drvs, but we don't
-  # want to require building their outputs to write the expressions
-  discard = builtins.unsafeDiscardOutputDependency;
+  inherit (defnix.defnixos.functionalities) generate-nixos-config;
 
-  expr = defnix.native.build-support.write-file "deployment.nix" ''
+  expr = write-file "deployment.nix" ''
     {
-      machine = { pkgs, ... }: let
-        nix-exec-lib = import ${nix-exec}/share/nix/lib.nix;
-
-        unsafe-perform-io = import ${nix-exec}/share/nix/unsafe-perform-io.nix;
-
-        defnix = unsafe-perform-io (import ${toString ../../..} nix-exec-lib {
-          config.system = pkgs.system;
-        });
-
-        svcs = {
-          ${join "\n          " (map-attrs-to-list (name: { service, ... }:
-            "\"${name}\" = {\n        " + "start = (import ${
-              discard service.start.drvPath
-            }).${service.start.outputName};\n        " + "initializer = ${
-              if service ? initializer
-                then "(import ${
-                  discard service.initializer.drvPath
-                }).${service.initializer.outputName}"
-                else "null"
-            };\n        " + "on-demand = ${if service.on-demand or false
-              then "true"
-              else "false"
-            };\n      };"
-          ) functionalities)}
-        };
-      in defnix.defnixos.nixos-wrappers.services-to-nixos-config svcs${
-        if target == "virtualbox" then " // {" +
-          "\n    deployment.targetEnv = \"virtualbox\";" +
-          "\n    deployment.virtualbox.memorySize = 2048;" +
-          "\n    deployment.virtualbox.headless = true;" +
-        "\n  }" else ""};
+      machine = { pkgs, ... }: {
+        imports = [ ${generate-nixos-config functionalities} ];
+        ${if target == "virtualbox" then "config = {"
+          + "\n      deployment.targetEnv = \"virtualbox\";"
+          + "\n      deployment.virtualbox.memorySize = 2048;"
+          + "\n      deployment.virtualbox.headless = true;"
+        + "\n    };" else ""}
+      };
     }
   '';
 

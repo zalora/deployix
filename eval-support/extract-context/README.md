@@ -36,7 +36,7 @@ distinctly named in the upstream documentation/source):
   by `extract-context`, a `source` context entry will correspond to a set with
   attribute `type` being `"context"`, `subtype` being `"source"`, and `path`
   pointing to the relevant store path.
-* `drv`: This is a reference to a derivation path. For example, if `foo` is 
+* `drv`: This is a reference to a derivation path. For example, if `foo` is
   derivation then `"${foo.drvPath}"` will hold a `drv` context entry pointing
   to `/nix/store/some-hash-foo.drv`, and will require that that path, all of
   its outputs, and all of the outputs of its dependent derivations to be valid
