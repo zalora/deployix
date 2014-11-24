@@ -91,11 +91,13 @@ extern "C" void decrypt( nix::EvalState & state
   fds[0] = filedes{pipe_fds[0]};
   fds[1] = filedes{pipe_fds[1]};
 
-  if (needsPass && pipe(pipe_fds) == -1)
-    throw nix::SysError("creating pipes");
+  if (needsPass) {
+    if (pipe(pipe_fds) == -1)
+      throw nix::SysError("creating pipes");
 
-  fds[2] = filedes{pipe_fds[0]};
-  fds[3] = filedes{pipe_fds[1]};
+    fds[2] = filedes{pipe_fds[0]};
+    fds[3] = filedes{pipe_fds[1]};
+  }
 
   fds[0].set_cloexec();
   fds[1].set_cloexec();
