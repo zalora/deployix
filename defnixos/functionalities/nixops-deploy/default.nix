@@ -13,15 +13,17 @@ defnix:
 
   inherit (defnix.defnixos.functionalities) generate-nixos-config;
 
+  target-expr = builtins.toString (if target == "virtualbox"
+    then ./virtualbox.nix
+    else null);
+
   expr = write-file "deployment.nix" ''
     {
       machine = { pkgs, ... }: {
-        imports = [ ${generate-nixos-config functionalities} ];
-        ${if target == "virtualbox" then "config = {"
-          + "\n      deployment.targetEnv = \"virtualbox\";"
-          + "\n      deployment.virtualbox.memorySize = 2048;"
-          + "\n      deployment.virtualbox.headless = true;"
-        + "\n    };" else ""}
+        imports = [
+          ${generate-nixos-config functionalities}
+          "${target-expr}"
+        ];
       };
     }
   '';
