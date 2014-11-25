@@ -1,5 +1,5 @@
 {
-  deployment = {
+  machine.deployment = {
     targetEnv = "virtualbox";
 
     virtualbox = {

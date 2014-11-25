@@ -29,16 +29,18 @@ defnix: functionalities: let
 
   target-expr = builtins.toString (if target == "virtualbox"
     then ./virtualbox.nix
+  else if target == "ec2"
+    then import ./ec2.nix { inherit name; }
     else null);
 
   expr = write-file "deployment.nix" ''
     {
       network.description = "${description}";
+
+      require = [ ${target-expr} ];
+
       machine = { pkgs, ... }: {
-        imports = [
-          ${generate-nixos-config functionalities}
-          "${target-expr}"
-        ];
+        imports = [ ${generate-nixos-config functionalities} ];
       };
     }
   '';
