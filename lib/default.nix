@@ -45,6 +45,9 @@ nix-exec-lib: let
         (builtins.head strings) (builtins.tail strings)
       else "";
 
+    # Do all elements satisfy the predicate?
+    all = pred: lib.fold (elem: acc: (pred elem) && acc) true;
+
     # Encapsulate the readDir builtin so we can throw a nice error message.
     readDir = builtins.readDir or (throw "defnix requires a nix version >= 1.8pre3843_3f8576a");
 

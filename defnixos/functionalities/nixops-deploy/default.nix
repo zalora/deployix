@@ -1,6 +1,20 @@
-defnix:
+defnix: functionalities: let
+  get-attr-if-all-same = attr: let
+    vals = map-attrs-to-list (name: value: value.${attr}) functionalities;
 
-{ functionalities, target, name, nixpkgs }: let
+    val-head = builtins.head vals;
+  in if defnix.lib.all (v: v == val-head) vals
+    then val-head
+    else throw "Deployments of functionalities with mixed ${attr} values not yet supported";
+
+  target = get-attr-if-all-same "nixops-deploy-target";
+
+  name = get-attr-if-all-same "nixops-name";
+
+  description = get-attr-if-all-same "nixops-description";
+
+  nixpkgs = get-attr-if-all-same "nixpkgs-src";
+
   inherit (defnix.native.nix-exec.pkgs) nixops;
 
   inherit (defnix.native.build-support) write-file;
@@ -19,6 +33,7 @@ defnix:
 
   expr = write-file "deployment.nix" ''
     {
+      network.description = "${description}";
       machine = { pkgs, ... }: {
         imports = [
           ${generate-nixos-config functionalities}
