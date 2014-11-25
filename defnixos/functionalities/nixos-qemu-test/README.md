@@ -4,12 +4,11 @@ nixos-qemu-test
 Deploy a set of functionalities to a NixOS qemu vm and run a test.
 
 
-Arguments
-------------
+Custom functionalities attributes
+----------------------------------
 
-* `functionalities`: The set of functionalities
-* `nixpkgs`: The nixpkgs checkout to use for the evaluation
-* `test-command`: The test command to run on the VM
+* `nixpkgs-src`: The source of nixpkgs to use for evaluation
+* `unit-test-command`: The test command to run on the VM
 
 Return
 -------
@@ -22,3 +21,9 @@ fails.
 Note that the `nixpkgs` function to run a qemu VM does not properly handle
 evaluating on a different system than the target, so neither does this
 function.
+
+Limitations
+------------
+
+Currently requires each functionality to match in all of the custom attributes.
+Each functionality is deployed to the same machine.

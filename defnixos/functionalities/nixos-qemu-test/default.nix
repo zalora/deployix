@@ -1,7 +1,20 @@
-defnix: let
+defnix: functionalities: let
+  inherit (defnix.lib) map-attrs-to-list;
+
+  get-attr-if-all-same = attr: let
+    vals = map-attrs-to-list (name: value: value.${attr}) functionalities;
+
+    val-head = builtins.head vals;
+  in if defnix.lib.all (v: v == val-head) vals
+    then val-head
+    else throw "Deployments of functionalities with mixed ${attr} values not yet supported";
+
+  nixpkgs = get-attr-if-all-same "nixpkgs-src";
+
+  test-command = get-attr-if-all-same "unit-test-command";
+
   inherit (defnix.defnixos.functionalities) generate-nixos-config;
-in { functionalities, nixpkgs, test-command }:
-  (import "${toString nixpkgs}/nixos/lib/testing.nix" {
+in (import "${toString nixpkgs}/nixos/lib/testing.nix" {
     inherit (defnix.config) system;
   }).simpleTest {
     testScript = ''
