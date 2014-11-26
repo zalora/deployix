@@ -101,8 +101,8 @@ nix-exec-lib: let
       # Take a list whose values are all monadic and return a monadic value
       # that produces a list whose values are the products of running the
       # corresponding values in the original set
-      sequence = lib.fold (melem: acc: bind melem (melem:
-        nix-exec-lib.map (acc: melem ++ acc) acc
+      sequence = lib.fold (melem: macc: bind melem (elem:
+        nix-exec-lib.map (acc: [ elem ] ++ acc) macc
       )) (nix-exec-lib.unit []);
 
       # Take a set whose values are all monadic and return a monadic value
