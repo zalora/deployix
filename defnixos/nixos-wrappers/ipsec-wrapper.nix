@@ -6,12 +6,12 @@
   nix-exec = (import (pkgs-native.fetchgit {
     url = "git://github.com/NixOS/nixpkgs.git";
 
-    rev = "c8be814f254311ca454844bdd34fd7206e801399";
+    rev = "7ec072acd8dc7126149d059d92dfcd5af7244b50";
 
-    sha256 = "0db22de19145f6859b8e5b40e4904c81e5fe4b00a86fbe8db684e68c25d3c0dd";
+    sha256 = "9c7fbfc93edb98a67ae585087f4a67b16061994a87f6c90ff4ce8fc7a79f947c";
   }) {}).nix-exec;
 
-  nix-exec-lib = import (nix-exec + "/share/nix/lib.nix");
+  nix-exec-lib = import (nix-exec + "/share/nix/lib.nix") unsafe-perform-io;
 
   unsafe-perform-io = import (nix-exec + "/share/nix/unsafe-perform-io.nix");
 
