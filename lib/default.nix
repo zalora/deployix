@@ -98,6 +98,13 @@ nix-exec-lib: let
       # bind :: m a -> (a -> m b) -> m b (AKA >>=)
       bind = ma: f: lib.nix-exec.join (lib.nix-exec.map f ma);
 
+      # Take a list whose values are all monadic and return a monadic value
+      # that produces a list whose values are the products of running the
+      # corresponding values in the original set
+      sequence = lib.fold (melem: acc: bind melem (melem:
+        nix-exec-lib.map (acc: melem ++ acc) acc
+      )) (nix-exec-lib.unit []);
+
       # Take a set whose values are all monadic and return a monadic value
       # that yields a set whose values are the results of running the
       # corresponding values in the original set
