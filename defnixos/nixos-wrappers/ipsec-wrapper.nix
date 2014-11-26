@@ -19,7 +19,7 @@
 
   inherit (lib) types mkOption mapAttrsToList;
 
-  strongswan-service = cfg.strongswan-service { inherit (cfg) ca; outgoing-hosts = cfg.secure-upstreams; };
+  strongswan-service = cfg.strongswan-service { inherit (cfg) ca cert-archive; outgoing-hosts = cfg.secure-upstreams; };
 
   services = cfg.services // { strongswan = strongswan-service; };
 in {
@@ -44,6 +44,14 @@ in {
       description = "The CA used to authenticate ipsec connections";
 
       type = types.uniq types.path;
+    };
+
+    defnixos.cert-archive = mkOption {
+      description = "The certificate archive containing a keypair signed by the CA";
+
+      default = null;
+
+      type = types.uniq (types.nullOr types.path);
     };
 
     defnixos.secure-upstreams = mkOption {
