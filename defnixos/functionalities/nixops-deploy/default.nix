@@ -1,9 +1,13 @@
 defnix: functionalities: let
   get-attr-if-all-same = attr: let
-    vals = map-attrs-to-list (name: value: value.${attr}) functionalities;
+    vals = builtins.concatLists (map-attrs-to-list (name: value:
+      if value ? ${attr} then [ value.${attr} ] else []
+    ) functionalities);
 
     val-head = builtins.head vals;
-  in if defnix.lib.all (v: v == val-head) vals
+  in if builtins.length vals == 0
+    then throw "No functionalities have a value for ${attr}"
+  else if defnix.lib.all (v: v == val-head) vals
     then val-head
     else throw "Deployments of functionalities with mixed ${attr} values not yet supported";
 
