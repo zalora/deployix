@@ -16,7 +16,35 @@
 
       inherit region accessKeyId;
 
-      rules = [ { fromPort = 22; toPort = 22; sourceIp = "0.0.0.0/0"; } ];
+      rules = [
+        {
+          fromPort = 22;
+
+          toPort = 22;
+
+          sourceIp = "0.0.0.0/0";
+        }
+
+        {
+          fromPort = 500;
+
+          toPort = 500;
+
+          protocol = "udp";
+
+          sourceIp = "0.0.0.0/0";
+        }
+
+        {
+          fromPort = 4500;
+
+          toPort = 4500;
+
+          protocol = "udp";
+
+          sourceIp = "0.0.0.0/0";
+        }
+      ];
     };
 
     machine = { resources, ... }: {
