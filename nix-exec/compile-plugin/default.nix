@@ -12,4 +12,4 @@ defnix: flags: cc: let
     then [ "-undefined" "dynamic_lookup" ]
     else []
   ) ++ flags) cc;
-in defnix.lib.nix-exec.dlopen so
+in defnix.lib.nix-exec.dlopen-variadic so

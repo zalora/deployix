@@ -98,6 +98,16 @@ nix-exec-lib: let
       # bind :: m a -> (a -> m b) -> m b (AKA >>=)
       bind = ma: f: lib.nix-exec.join (lib.nix-exec.map f ma);
 
+      # A variadic variant of dlopen that takes an arity and returns a function
+      # of that arity, instead of requiring the caller to construct a list
+      # of arguments themselves. This is how dlopen worked before nix-exec
+      # version 4.
+      dlopen-variadic = filename: symbol: arity: let
+        go = args: arity: if arity > 0
+          then arg: go (args ++ [ arg ]) (arity - 1)
+          else nix-exec-lib.dlopen filename symbol args;
+      in go [] arity;
+
       # Take a list whose values are all monadic and return a monadic value
       # that produces a list whose values are the products of running the
       # corresponding values in the original set
