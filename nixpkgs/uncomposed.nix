@@ -70,6 +70,8 @@ in lib.nix-exec.map (sets: (inherit-pkgs {
   gnupg = sets.nixpkgs-c8be814;
 
   nixops = sets.nixpkgs-8b9b0d9;
+
+  shadow = sets.nixpkgs-8b9b0d9;
 }) // {
   haskellPackages = inherit-pkgs {
     ghcPlain = haskellPackages sets.nixpkgs-c8be814;

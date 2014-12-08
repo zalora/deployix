@@ -28,4 +28,7 @@ lib: (lib.recursive-import ./.) // {
 
   # The GNU privacy guard
   gnupg = defnix: defnix.nixpkgs.gnupg;
+
+  # The shadow password and account management tool suite
+  shadow = defnix: defnix.nixpkgs.shadow;
 }
