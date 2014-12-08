@@ -93,6 +93,11 @@ nix-exec-lib: let
       always = 1; # Restart whenever it exits
     };
 
+    # Like basename, but if p is a derivation return the name without the hash
+    # prefix
+    hashless-basename = p: p.name or
+      (baseNameOf (builtins.unsafeDiscardStringContext (toString p)));
+
     # nix-exec IO monad functions
     nix-exec = nix-exec-lib // rec {
       # bind :: m a -> (a -> m b) -> m b (AKA >>=)
