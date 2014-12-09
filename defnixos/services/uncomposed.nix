@@ -15,4 +15,14 @@ lib: (lib.recursive-import ./.) // {
         defnix.lib.hashless-basename init
       }" svc.initializer init;
   };
+
+  # Create a new user and run the service as that user
+  run-as-user = defnix: let
+    inherit (defnix.defnixos) services;
+  in user-spec@{ name, comment }: svc:
+    services.sequence-initializers (services.service-with-settings svc {
+      user = name;
+
+      group = "nogroup";
+    }) (defnix.pkgs.add-user user-spec);
 }
