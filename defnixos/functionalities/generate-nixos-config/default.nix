@@ -45,7 +45,7 @@ defnix: let
       +   "\n${indent}};";
 
     ready-service =
-                     "\"${name}\"-ready = {"
+                     "\"${name}-ready\" = {"
       +   "\n${indent}  description = \"${name} readiness notification\";"
 
       + "\n\n${indent}  serviceConfig.ExecStart = ${deferred-notify-readiness};"
