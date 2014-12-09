@@ -28,4 +28,7 @@ lib: (lib.recursive-import ./.) // {
 
   # The GNU privacy guard
   gnupg = defnix: defnix.nixpkgs.gnupg;
+
+  # The openssh SSH daemon
+  sshd = defnix: "${defnix.nixpkgs.openssh}/sbin/sshd";
 }
