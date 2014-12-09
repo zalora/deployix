@@ -34,6 +34,34 @@ name: let
       then "0"
       else "setgid(${toString (calculate-id group)})";
 
+    setup-mounts = join ";\n" (map-attrs-to-list (dest: source:
+      if builtins.substring 0 1 dest == "/" then ''
+        {
+          /* We need to ensure we're not mounting inside of a shared mount */
+          char dest[sizeof "${dest}"];
+          memmove(dest, "${dest}", sizeof dest);
+          size_t chars_left = sizeof dest - 1;
+          while (mount(0, dest, 0, MS_PRIVATE, 0) == -1) {
+            char * slash = (char *) memrchr(dest, '/', chars_left);
+            while (slash != dest && *(slash - 1) == '/')
+              --slash;
+            if (slash == dest) {
+              mount(0, "/", 0, MS_PRIVATE, 0);
+              break;
+            }
+            chars_left = (slash - dest) - 1;
+            *slash = '\0';
+          }
+        }
+        if (mount("${source}", "${dest}", NULL, MS_BIND, NULL) == -1)
+          err(214, "binding ${source} to ${dest}")
+      '' else throw "${dest} is not an absolute path"
+    ) (settings.bind-mounts or {}));
+
+    unshare = if (settings.bind-mounts or {}) == {}
+      then "0"
+      else "unshare(CLONE_NEWNS)";
+
     fork = if restart == restart-modes.no
       then ""
       else ''
@@ -56,6 +84,9 @@ name: let
     #include <errno.h>
     #include <unistd.h>
     #include <err.h>
+    #include <sched.h>
+    #include <sys/mount.h>
+    #include <string.h>
 
     static char * filename = "${filename}";
 
@@ -67,6 +98,9 @@ name: let
     ${envp-def}
 
     int main(int argc, char ** _argv) {
+      if (${unshare} == -1)
+        err(214, "unsharing parent execution context");
+      ${setup-mounts};
       if (${setgid} == -1)
         err(213, "Setting group id");
       if (${setuid} == -1)
@@ -77,7 +111,10 @@ name: let
     }
   '')) // {
     run-with-settings = new-settings: self (args // {
-      settings = settings // new-settings;
+      settings = settings // new-settings // {
+        bind-mounts = (settings.bind-mounts or {}) //
+          (new-settings.bind-mounts or {});
+      };
     });
 
     inherit settings;
