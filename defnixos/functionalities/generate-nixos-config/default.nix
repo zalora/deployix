@@ -57,7 +57,7 @@ defnix: let
 
       + "\n\n${indent}  serviceConfig.RemainAfterExit = true;"
 
-      + "\n\n${indent}  serviceConfig.BindsTo = [ \"${name}.service\" ];"
+      + "\n\n${indent}  unitConfig.BindsTo = [ \"${name}.service\" ];"
 
       + "\n\n${indent}  after = [ \"${name}.service\" ];"
 
