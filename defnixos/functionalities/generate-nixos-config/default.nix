@@ -23,8 +23,8 @@ defnix: let
   deferred-notify-readiness = defer defnix.pkgs.notify-readiness;
 
   on-demand-svc-strings = indent: name: service: let
-    listen-run = write-script "${name}-listen" ''
-      #!${sh} -e
+    listen-run = defnix.build-support.write-script "${name}-listen" ''
+      #!${defnix.pkgs.sh} -e
       ${toString service.initializer or ""}
       mkdir -p /run/defnixos-services/${name}
       cd /run/defnixos-services/${name}
@@ -33,7 +33,7 @@ defnix: let
 
     listen-service =
                      "\"${name}\" = {"
-      +   "\n${indent}  description = \"${name} readiness notification\";"
+      +   "\n${indent}  description = \"${name}\";"
 
       + "\n\n${indent}  serviceConfig.ExecStart = ${defer listen-run};"
 
