@@ -33,6 +33,14 @@ lib: let
 
       rev = "8b9b0d95a08706aa0757150d5fb310d545ef9176";
     });
+
+    nixpkgs-86055e2 = nix-exec.map (src:
+      let fn = import src; in system: fn { inherit system; }
+    ) (fetchgit {
+      url = "git://github.com/NixOS/nixpkgs.git";
+
+      rev = "86055e2f0071a4c865561b2ff26081c31145894b";
+    });
   };
 
   haskellPackages = pkgs-fun: system: (pkgs-fun system).haskellPackages;
@@ -69,7 +77,7 @@ in lib.nix-exec.map (sets: (inherit-pkgs {
 
   gnupg = sets.nixpkgs-c8be814;
 
-  nixops = sets.nixpkgs-8b9b0d9;
+  nixopsUnstable = sets.nixpkgs-86055e2;
 
   openssh = sets.nixpkgs-8b9b0d9;
 }) // {

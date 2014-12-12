@@ -1,3 +1,3 @@
 lib: {
-  nixops = defnix: "${defnix.nixpkgs.nixops}/bin/nixops";
+  nixops = defnix: "${defnix.nixpkgs.nixopsUnstable}/bin/nixops";
 }
