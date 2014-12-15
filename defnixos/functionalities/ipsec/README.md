@@ -1,13 +1,12 @@
-ipsec-wrapper
+ipsec
 ================
 
-Wrap a functionality deployment implementation with one forming an ad-hoc
-peer-to-peer ipsec network.
+Transform a set of functionalities to include an ad-hoc peer-to-peer ipsec
+network.
 
 Arguments
 ----------
 
-* `wrapped`: The underlying deployment implementation
 * `functionalities`: The functionalities to deploy
 
 Custom functionalities attributes
@@ -23,9 +22,9 @@ See `<defnix/defnixos/services/strongswan/README.md>` for more details.
 Return
 -------
 
-The result of calling `wrapped` with the functionality set, while also enabling
-incoming ipsec connections from any server with a certificate signed by
-`ipsec-ca` and outgiong ipsec connections to any servers listed in
+A new `functionality` set that covers the behavior of the existing set, while
+also enabling incoming ipsec connections from any server with a certificate
+signed by `ipsec-ca` and outgoing ipsec connections to any servers listed in
 `outgoing-hosts`
 
 Limitations

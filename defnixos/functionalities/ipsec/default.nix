@@ -1,4 +1,4 @@
-defnix: wrapped: functionalities: let
+defnix: functionalities: let
   inherit (defnix.lib) map-attrs-to-list;
 
   get-attr-if-all-same = attr: let
@@ -20,8 +20,8 @@ defnix: wrapped: functionalities: let
   outgoing-hosts = builtins.concatLists (map-attrs-to-list (name: value:
     value.outgoing-ipsec-hosts or []
   ) functionalities);
-in wrapped (functionalities // {
+in functionalities // {
   strongswan.service = defnix.defnixos.services.strongswan {
     inherit ca cert-archive outgoing-hosts;
   };
-})
+}
