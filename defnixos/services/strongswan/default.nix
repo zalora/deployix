@@ -31,6 +31,8 @@ let
 
   strongswan-conf = ca: outgoing-hosts: service-name: cert-archive: builtins.toFile "strongswan.conf" ''
     charon {
+      retry_initiate_interval = 30
+
       plugins {
         stroke {
           secrets_file = ${secrets-file service-name cert-archive}
