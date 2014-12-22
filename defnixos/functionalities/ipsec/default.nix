@@ -21,7 +21,11 @@ defnix: functionalities: let
     value.outgoing-ipsec-hosts or []
   ) functionalities);
 in functionalities // {
-  strongswan.service = defnix.defnixos.services.strongswan {
-    inherit ca cert-archive outgoing-hosts;
+  strongswan = {
+    service = defnix.defnixos.services.strongswan {
+      inherit ca cert-archive outgoing-hosts;
+    };
+
+    singleton = true;
   };
 }
