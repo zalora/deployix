@@ -23,6 +23,9 @@ lib: let
   nixpkgs-sets = sequence-attrs {
     nixpkgs-986dfe1 =
       make-upstream-nixpkgs-set "986dfe15456012043a4c6e5538806560ddf98c80";
+
+    nixpkgs-a2c1414 =
+      make-upstream-nixpkgs-set "a2c14143e91bb76c69652b9a0bda15aca2b7fc62";
   };
 
   haskellPackages = pkgs-fun: system: (pkgs-fun system).haskellPackages;
@@ -64,6 +67,8 @@ in lib.nix-exec.map (sets: (inherit-pkgs {
   systemd = sets.nixpkgs-986dfe1;
 
   gnugrep = sets.nixpkgs-986dfe1;
+
+  newrelic-sysmond = sets.nixpkgs-a2c1414;
 }) // {
   haskellPackages = inherit-pkgs {
     ghcPlain = haskellPackages sets.nixpkgs-986dfe1;
