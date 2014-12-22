@@ -29,6 +29,7 @@ defnix: let
     if [ $(grep ^ID /etc/os-release) = "ID=nixos" ]; then
       unit_dir=/etc/systemd-mutable/system
     fi
+    mkdir -p $unit_dir
 
     to_stop=()
     to_delete=()
