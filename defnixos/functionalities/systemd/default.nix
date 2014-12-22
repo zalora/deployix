@@ -149,7 +149,7 @@ in service-prefix: functionalities: let
         }.target.wants
       '' else ""}
       ${if initializer != null then ''
-        echo Initializing ${service-name} '>&2' >> $out/initialize
+        echo echo Initializing ${service-name} '>&2' >> $out/initialize
         echo ${initializer} >> $out/initialize
       '' else ""}
     '') functionalities)}
