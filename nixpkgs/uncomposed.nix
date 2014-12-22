@@ -5,42 +5,24 @@ lib: let
 
   inherit (nix-exec.builtins) fetchgit;
 
+  make-upstream-nixpkgs-set = rev: nix-exec.map (src:
+      let fn = import src; in system: fn { inherit system; }
+    ) (fetchgit {
+      url = "git://github.com/NixOS/nixpkgs.git";
+
+      inherit rev;
+    });
+
   /* Note! When updating nixpkgs, please only only update attribtues in
    * pkgs that you've actually tested, and keep the rest at the version of
-   * nixpkgs they're currently using
+   * nixpkgs they're currently using.
+   *
+   * Currently we are sticking with the 14.12 release branch unless we need
+   * something from master
    */
   nixpkgs-sets = sequence-attrs {
-    nixpkgs-499c510 = nix-exec.map (src:
-      let fn = import src; in system: fn { inherit system; }
-    ) (fetchgit {
-      url = "git://github.com/NixOS/nixpkgs.git";
-
-      rev = "499c51016ef67bd0b158528dbff17ed6ecedd78b";
-    });
-
-    nixpkgs-c8be814 = nix-exec.map (src:
-      let fn = import src; in system: fn { inherit system; }
-    ) (fetchgit {
-      url = "git://github.com/NixOS/nixpkgs.git";
-
-      rev = "c8be814f254311ca454844bdd34fd7206e801399";
-    });
-
-    nixpkgs-8b9b0d9 = nix-exec.map (src:
-      let fn = import src; in system: fn { inherit system; }
-    ) (fetchgit {
-      url = "git://github.com/NixOS/nixpkgs.git";
-
-      rev = "8b9b0d95a08706aa0757150d5fb310d545ef9176";
-    });
-
-    nixpkgs-86055e2 = nix-exec.map (src:
-      let fn = import src; in system: fn { inherit system; }
-    ) (fetchgit {
-      url = "git://github.com/NixOS/nixpkgs.git";
-
-      rev = "86055e2f0071a4c865561b2ff26081c31145894b";
-    });
+    nixpkgs-986dfe1 =
+      make-upstream-nixpkgs-set "986dfe15456012043a4c6e5538806560ddf98c80";
   };
 
   haskellPackages = pkgs-fun: system: (pkgs-fun system).haskellPackages;
@@ -49,45 +31,41 @@ lib: let
     (pkgs-fun defnix.config.system).${pkg}
   );
 in lib.nix-exec.map (sets: (inherit-pkgs {
-  gcc = sets.nixpkgs-8b9b0d9;
+  gcc = sets.nixpkgs-986dfe1;
 
-  libcxx = sets.nixpkgs-8b9b0d9;
+  libcxx = sets.nixpkgs-986dfe1;
 
-  coreutils = sets.nixpkgs-499c510;
+  coreutils = sets.nixpkgs-986dfe1;
 
-  bash = sets.nixpkgs-499c510;
+  bash = sets.nixpkgs-986dfe1;
 
-  strongswan = sets.nixpkgs-499c510;
+  strongswan = sets.nixpkgs-986dfe1;
 
-  kmod = sets.nixpkgs-499c510;
+  kmod = sets.nixpkgs-986dfe1;
 
-  openssl = sets.nixpkgs-499c510;
+  patchelf = sets.nixpkgs-986dfe1;
 
-  patchelf = sets.nixpkgs-499c510;
+  php = sets.nixpkgs-986dfe1;
 
-  php = sets.nixpkgs-499c510;
+  nginx = sets.nixpkgs-986dfe1;
 
-  nginx = sets.nixpkgs-499c510;
+  binutils = sets.nixpkgs-986dfe1;
 
-  binutils = sets.nixpkgs-499c510;
+  nix = sets.nixpkgs-986dfe1;
 
-  nixUnstable = sets.nixpkgs-8b9b0d9;
+  boehmgc = sets.nixpkgs-986dfe1;
 
-  boehmgc = sets.nixpkgs-8b9b0d9;
+  gnupg = sets.nixpkgs-986dfe1;
 
-  gnupg = sets.nixpkgs-c8be814;
+  openssh = sets.nixpkgs-986dfe1;
 
-  nixopsUnstable = sets.nixpkgs-86055e2;
+  diffutils = sets.nixpkgs-986dfe1;
 
-  openssh = sets.nixpkgs-8b9b0d9;
+  systemd = sets.nixpkgs-986dfe1;
 
-  diffutils = sets.nixpkgs-8b9b0d9;
-
-  systemd = sets.nixpkgs-8b9b0d9;
-
-  gnugrep = sets.nixpkgs-8b9b0d9;
+  gnugrep = sets.nixpkgs-986dfe1;
 }) // {
   haskellPackages = inherit-pkgs {
-    ghcPlain = haskellPackages sets.nixpkgs-c8be814;
+    ghcPlain = haskellPackages sets.nixpkgs-986dfe1;
   };
 }) nixpkgs-sets

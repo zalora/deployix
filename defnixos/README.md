@@ -20,7 +20,7 @@ functions allow starting a service when arbitrary conditions are met.
 Services can be grouped together into `functionalities`, and there are a
 number of possibility functionality implementations that can take a set
 of functionalities and actualize them in some way. For example, we currently
-have `nixops-deploy` which deploys a set of functionalities to a nixops
+have `systemd` which actiavtes a set of functionalities on a systemd-based
 machine.
 
 Please see the READMEs in the `services`, `activations`, and
