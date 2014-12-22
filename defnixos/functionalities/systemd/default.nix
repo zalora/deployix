@@ -9,6 +9,8 @@ defnix: let
   activate = write-script "defnixos-systemd-activate" ''
     #!${sh} -e
 
+    shopt -s nullglob
+
     if [ "$#" -ne 1 ]; then
       echo "Usage: $0 CLOSURE" >&2
       exit 1
@@ -53,7 +55,7 @@ defnix: let
     profile=/nix/var/nix/profiles/defnixos/$prefix
 
     to_restart=(defnixos-$prefix.target on-demand-$prefix.target)
-    for filename in $profile/*.service; do
+    for filename in $closure/*.service; do
       svc=$(basename $filename)
       if [ -e $unit_dir/$svc ]; then
         if diff $unit_dir/$svc $filename &>/dev/null; then
@@ -65,7 +67,7 @@ defnix: let
     done
     for filename in $closure/{*.wants,*.target}; do
       base=$(basename $filename)
-      ln -sfT $profile/$base $unit_dir
+      ln -sfT $profile/$base $unit_dir/$base
     done
     mkdir -p $unit_dir/multi-user.target.wants
     ln -sf ../defnixos-$prefix.target $unit_dir/multi-user.target.wants
@@ -87,7 +89,7 @@ defnix: let
     echo Reloading systemd >&2
     systemctl daemon-reload
 
-    echo (Re)starting the following units: ''${to_restart[@]}
+    echo (Re)starting the following units: ''${to_restart[@]} >&2
     systemctl reload-or-restart ''${to_restart[@]}
   '';
 in service-prefix: functionalities: let
@@ -147,7 +149,7 @@ in service-prefix: functionalities: let
         }.target.wants
       '' else ""}
       ${if initializer != null then ''
-        echo Initializing ${service-name} >> $out/initialize
+        echo Initializing ${service-name} '>&2' >> $out/initialize
         echo ${initializer} >> $out/initialize
       '' else ""}
     '') functionalities)}
