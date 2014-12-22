@@ -3,12 +3,8 @@ defnix:
 let
   inherit (defnix.pkgs) strongswan kmod execve generate-certs;
 
-  secrets-file = service-name: cert-archive: let
-    archive = if cert-archive == null
-      then "/etc/x509/${service-name}.p12"
-      else cert-archive;
-  in builtins.toFile "ipsec.secrets"
-    ": P12 ${archive} \"fakepass\"";
+  secrets-file = service-name: cert-archive: builtins.toFile "ipsec.secrets"
+    ": P12 ${cert-archive} \"fakepass\"";
 
   #!!! TODO: use strongswan user
   config-file = ca: outgoing-hosts: builtins.toFile "ipsec.conf" ''
@@ -49,7 +45,7 @@ in
 { outgoing-hosts ? []         # Hosts to make outgoing connections to
 , ca                          # The root CA certificate
 , service-name ? "strongswan" # The name of this service in the global service namespace
-, cert-archive ? null         # The pkcs12 archive containing the cert and private key
+, cert-archive                # The pkcs12 archive containing the cert and private key
 }:
 
 {
@@ -65,6 +61,4 @@ in
     };
   };
 
-} // (if cert-archive == null then {
-  initializer = generate-certs service-name;
-} else {})
+}
