@@ -31,4 +31,13 @@ lib: (lib.recursive-import ./.) // {
 
   # The openssh SSH daemon
   sshd = defnix: "${defnix.nixpkgs.openssh}/sbin/sshd";
+
+  # GNU Diff
+  diffutils = defnix: defnix.nixpkgs.diffutils;
+
+  # systemd init system
+  systemd = defnix: defnix.nixpkgs.systemd;
+
+  # GNU grep
+  gnugrep = defnix: defnix.nixpkgs.gnugrep;
 }

@@ -80,6 +80,12 @@ in lib.nix-exec.map (sets: (inherit-pkgs {
   nixopsUnstable = sets.nixpkgs-86055e2;
 
   openssh = sets.nixpkgs-8b9b0d9;
+
+  diffutils = sets.nixpkgs-8b9b0d9;
+
+  systemd = sets.nixpkgs-8b9b0d9;
+
+  gnugrep = sets.nixpkgs-8b9b0d9;
 }) // {
   haskellPackages = inherit-pkgs {
     ghcPlain = haskellPackages sets.nixpkgs-c8be814;
