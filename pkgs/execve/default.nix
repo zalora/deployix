@@ -38,7 +38,7 @@ name: let
 
     chdir = if working-directory == null
       then "0"
-      else "chdir(\"${working-directory}\")"
+      else "chdir(\"${working-directory}\")";
 
     setup-mounts = join ";\n" (map-attrs-to-list (dest: source:
       if builtins.substring 0 1 dest == "/" then ''
