@@ -1,5 +1,7 @@
 defnix: let
-  inherit (defnix.pkgs) multiplex-activations emulate-inetd execve sshd;
+  inherit (defnix.pkgs) multiplex-activations emulate-inetd execve openssh;
+
+  sshd = "${openssh}/sbin/sshd";
 
   inherit (defnix.defnixos.activations) socket;
 
