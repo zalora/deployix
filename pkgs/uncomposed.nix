@@ -42,5 +42,5 @@ lib: (lib.recursive-import ./.) // {
   gnugrep = defnix: defnix.nixpkgs.gnugrep;
 
   # The newrelic system monitoring daemon
-  newrelic-sysmond = defnix: defnix.nixpkgs/newrelic-sysmond;
+  newrelic-sysmond = defnix: defnix.nixpkgs.newrelic-sysmond;
 }
