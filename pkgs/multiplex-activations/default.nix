@@ -12,13 +12,19 @@ activations: assert activations != []; let
     ''-DACTIVATION_HEADER="${activation-header}"''
   ] ./multiplex-activations.c;
 
-  self = start: assert activations != []; let
+  self = settings: start: assert activations != []; let
     name = start.name or (baseNameOf (toString start));
   in (execve "activate-${name}" {
     filename = multiplex-activations;
 
+    inherit settings;
+
     argv = [ "multiplex-activations" start name ] ++ activations;
   }) // {
-    run-with-settings = settings: self (run-with-settings start settings);
+    run-with-settings = settings: let
+      parent-settings = { inherit (settings) working-directory; };
+
+      child-settings = removeAttrs settings [ "working-directory" ];
+    in self parent-settings (run-with-settings start child-settings);
   };
-in self
+in self {}
