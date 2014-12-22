@@ -174,6 +174,8 @@ in write-script "defnixos-${service-prefix}-activate" ''
   mkdir -p $(dirname $script)
 
   if diff $script ${activate} &>/dev/null; then
+    :
+  else
     nix-env --set -p $script ${activate}
   fi
 
