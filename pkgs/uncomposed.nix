@@ -43,4 +43,7 @@ lib: (lib.recursive-import ./.) // {
 
   # The newrelic system monitoring daemon
   newrelic-sysmond = defnix: defnix.nixpkgs.newrelic-sysmond;
+
+  # Interactive version of bash
+  bash-interactive = defnix: "${defnix.nixpkgs.bashInteractive}/bin/bash";
 }
