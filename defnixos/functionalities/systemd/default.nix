@@ -89,7 +89,7 @@ defnix: let
     echo Reloading systemd >&2
     systemctl daemon-reload
 
-    echo (Re)starting the following units: ''${to_restart[@]} >&2
+    echo \(Re\)starting the following units: ''${to_restart[@]} >&2
     systemctl reload-or-restart ''${to_restart[@]}
   '';
 in service-prefix: functionalities: let
