@@ -6,7 +6,7 @@ defnix: let
   inherit (defnix.defnixos.activations) socket;
 
   inherit (defnix.lib.socket-address-families) AF_INET6;
-in { passwd, group, port, config }: {
+in { passwd, group, sudoers, port, config }: {
   start = multiplex-activations [
     (socket { family = AF_INET6; inherit port; })
   ] (emulate-inetd (execve "run-sshd" {
@@ -18,6 +18,8 @@ in { passwd, group, port, config }: {
       "/etc/passwd" = passwd;
 
       "/etc/group" = group;
+
+      "/etc/sudoers" = sudoers;
 
       # TODO: run private nscd instance instead
       "/var/run/nscd" = "/var/empty";

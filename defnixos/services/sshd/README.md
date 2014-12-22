@@ -9,5 +9,6 @@ Arguments
 
 * `passwd`: The file to use as `/etc/passwd`
 * `group`: The file to use as `/etc/group`
+* `sudoers`: The file to use as `/etc/sudoers`
 * `port`: The port to listen on
 * `config`: The configuration file
