@@ -17,6 +17,9 @@ lib: (lib.recursive-import ./.) // {
   # Haskell compiler
   ghc = defnix: "${defnix.nixpkgs.haskellPackages.ghcPlain}/bin/ghc";
 
+  # The Stream EDitor
+  sed = defnix: "${defnix.nixpkgs.gnused}/bin/sed";
+
   # Run a series of tests
   write-test-script = defnix: let
     inherit (defnix.pkgs) sh;

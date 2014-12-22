@@ -69,6 +69,8 @@ in lib.nix-exec.map (sets: (inherit-pkgs {
   gnugrep = sets.nixpkgs-986dfe1;
 
   newrelic-sysmond = sets.nixpkgs-a2c1414;
+
+  gnused = sets.nixpkgs-a2c1414;
 }) // {
   haskellPackages = inherit-pkgs {
     ghcPlain = haskellPackages sets.nixpkgs-986dfe1;
