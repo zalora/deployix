@@ -2,7 +2,7 @@ defnix: let
   inherit (defnix.build-support) write-script run-script;
 
   inherit (defnix.pkgs) sh coreutils systemd gnugrep nix diffutils
-    notify-readiness;
+    notify-readiness run-with-settings;
 
   inherit (defnix.lib) join map-attrs-to-list hashless-basename;
 
@@ -122,9 +122,10 @@ in service-prefix: functionalities: let
       ${if on-demand then "" else "After=on-demand-${service-prefix}.target"}
 
       [Service]
-      ExecStart=@${service.start} ${hashless-basename service.start}
+      ExecStart=@${run-with-settings service.start {
+        working-directory = runtime-dir;
+      }} ${hashless-basename service.start}
       ExecStartPre=@${coreutils}/bin/mkdir mkdir -p ${runtime-dir}
-      WorkingDirectory=${runtime-dir}
       Type=${if on-demand then "notify" else "simple"}
       EOF
       ln -sv ../${service-name}.service $out/${if on-demand

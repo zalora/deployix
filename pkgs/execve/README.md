@@ -16,6 +16,7 @@ Arguments
   * `group`: The group to switch to.
   * `restart`: The restart mode (see `restart-modes` in
      `<defnix/lib/default.nix>`). Defaults to `restart-modes.no`.
+  * `working-directory`: The directory to change to before executing
   * `bind-mounts`: A set whose names correspond to paths to be bind-mounted
     from the path in the value. If non-empty, the process will run in a private
     mount namespace.
@@ -26,6 +27,7 @@ Exit codes
 * 212: Failed to execute
 * 213: Failed to change user/group
 * 214: Error setting up mounts
+* 215: Error changing directory
 
 Example
 --------

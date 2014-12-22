@@ -12,6 +12,8 @@ name: let
 
     group = settings.group or null;
 
+    working-directory = settings.working-directory or null;
+
     restart = settings.restart or restart-modes.no;
 
     needs-envp = envp != null;
@@ -33,6 +35,10 @@ name: let
     setgid = if group == null
       then "0"
       else "setgid(${toString (calculate-id group)})";
+
+    chdir = if working-directory == null
+      then "0"
+      else "chdir(\"${working-directory}\")"
 
     setup-mounts = join ";\n" (map-attrs-to-list (dest: source:
       if builtins.substring 0 1 dest == "/" then ''
@@ -101,6 +107,9 @@ name: let
       if (${unshare} == -1)
         err(214, "unsharing parent execution context");
       ${setup-mounts};
+      if (${chdir} == -1)
+        err(215, "Changing working directory");
+      /* Always drop perms last! */
       if (${setgid} == -1)
         err(213, "Setting group id");
       if (${setuid} == -1)
