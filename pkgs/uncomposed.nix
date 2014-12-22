@@ -46,4 +46,7 @@ lib: (lib.recursive-import ./.) // {
 
   # Interactive version of bash
   bash-interactive = defnix: "${defnix.nixpkgs.bashInteractive}/bin/bash";
+
+  # Misc linux utilities
+  utillinux = defnix: defnix.nixpkgs.utillinux;
 }
