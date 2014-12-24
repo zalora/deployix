@@ -31,6 +31,6 @@ in {
     #!${sh} -e
     mkdir -p ${prefix} -m 700
     mkdir -p ${log-dir} -m 700
-    ln -svf ${log-dir} ${prefix}/logs
+    ln -svfT ${log-dir} ${prefix}/logs
   '';
 }
