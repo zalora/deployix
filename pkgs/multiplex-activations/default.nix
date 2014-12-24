@@ -22,7 +22,9 @@ activations: assert activations != []; let
     argv = [ "multiplex-activations" start name ] ++ activations;
   }) // {
     run-with-settings = settings: let
-      parent-settings = { inherit (settings) working-directory; };
+      parent-settings = {
+        working-directory = settings.working-directory or null;
+      };
 
       child-settings = removeAttrs settings [ "working-directory" ];
     in self parent-settings (run-with-settings start child-settings);
