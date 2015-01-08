@@ -46,7 +46,7 @@ defnix: let
         if [ ! -e $closure/$svc ]; then
           if [ -e $unit_dir/$svc ]; then
             to_stop+=($svc)
-            to_delete+=$($unit_dir/$svc)
+            to_delete+=($unit_dir/$svc)
           fi
         fi
       done
