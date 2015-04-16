@@ -29,6 +29,12 @@ lib: (lib.recursive-import ./.) // {
   # The GNU privacy guard
   gnupg = defnix: defnix.nixpkgs.gnupg;
 
+  # GnuPG Made Easy, a library to access to GnuPG
+  gpgme = defnix: defnix.nixpkgs.gpgme;
+
+  # library that defines common error values for all GnuPG components
+  libgpgerror = defnix: defnix.nixpkgs.libgpgerror;
+
   # The openssh SSH suite
   openssh = defnix: defnix.nixpkgs.openssh;
 

@@ -60,6 +60,10 @@ in lib.nix-exec.map (sets: (inherit-pkgs {
 
   gnupg = sets.nixpkgs-986dfe1;
 
+  gpgme = sets.nixpkgs-986dfe1;
+
+  libgpgerror = sets.nixpkgs-986dfe1;
+
   openssh = sets.nixpkgs-986dfe1;
 
   diffutils = sets.nixpkgs-986dfe1;

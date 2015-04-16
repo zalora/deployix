@@ -1,66 +1,77 @@
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE
-#endif
-#include <string>
-#include <iostream>
-#include <utility>
-extern "C" {
-#include <unistd.h>
-#include <fcntl.h>
 #include <errno.h>
-#include <string.h>
-#include <sys/wait.h>
+#include <stdio.h>
+
+#include <string>
+
+#include <eval-inline.hh>
+#include <eval.hh>
+#include <store-api.hh>
+#include <util.hh>
+
+#include <gpgme.h>
+
+static inline void
+fail_if_err (const gpgme_error_t & err)
+{
+  if (err)
+    {
+      fprintf (stderr, "%s:%d: %s: %s\n",
+               __FILE__, __LINE__, gpgme_strsource (err),
+               gpgme_strerror (err));
+      exit (EXIT_FAILURE);
+    }
 }
 
-#include <eval.hh>
-#include <eval-inline.hh>
-#include <util.hh>
-#include <store-api.hh>
+static std::string
+gpgme_decrypt (const std::string &path)
+{
+  gpgme_ctx_t ctx;
+  gpgme_error_t err;
+  gpgme_data_t in, out;
+  gpgme_decrypt_result_t result;
+  std::string res;
+  int ret;
 
-class filedes {
-  int fd;
+  const size_t BUF_SIZE = 512;
+  char buf[BUF_SIZE + 1];
 
-  void close() noexcept {
-    if (fd != -1 && ::close(fd) == -1)
-      std::cerr << "error closing file descriptor: " << strerror(errno);
-  };
+  gpgme_check_version (NULL);
+  err = gpgme_new (&ctx);
+  fail_if_err (err);
 
-  public:
-  filedes() : fd{-1} {};
+  err = gpgme_data_new_from_file (&in, path.c_str(), 1);
+  fail_if_err (err);
 
-  filedes(int fd) : fd{fd} {};
+  err = gpgme_data_new (&out);
+  fail_if_err (err);
 
-  filedes(const filedes &) = delete;
+  err = gpgme_op_decrypt (ctx, in, out);
+  fail_if_err (err);
 
-  filedes(filedes && that) : fd{that.fd} {
-    that.fd = -1;
-  };
+  result = gpgme_op_decrypt_result (ctx);
+  if (result->unsupported_algorithm)
+    {
+      fprintf (stderr, "%s:%i: unsupported algorithm: %s\n",
+               __FILE__, __LINE__, result->unsupported_algorithm);
+      exit (EXIT_FAILURE);
+    }
 
-  filedes & operator=(const filedes &) & = delete;
+  ret = gpgme_data_seek (out, 0, SEEK_SET);
+  if (ret)
+    fail_if_err (gpgme_err_code_from_errno (errno));
+  while ((ret = gpgme_data_read (out, buf, BUF_SIZE)) > 0)
+    res.append (buf, ret);
+  if (ret < 0)
+    fail_if_err (gpgme_err_code_from_errno (errno));
 
-  filedes & operator=(filedes && that) & {
-    close();
-    fd = that.fd;
-    that.fd = -1;
-    return *this;
-  };
+  gpgme_data_release (in);
+  gpgme_data_release (out);
+  gpgme_release (ctx);
 
-  ~filedes() {
-    close();
-  };
+  return (res);
+}
 
-  explicit operator int() {
-    return fd;
-  };
 
-  explicit operator bool() {
-    return fd != -1;
-  };
-
-  void set_cloexec() {
-    ::fcntl(fd, F_SETFD, fcntl(fd, F_GETFD) | FD_CLOEXEC);
-  };
-};
 
 extern "C" void decrypt( nix::EvalState & state
                        , const nix::Pos & pos
@@ -69,94 +80,16 @@ extern "C" void decrypt( nix::EvalState & state
                        ) {
   state.forceValue(*args[0]);
 
-  auto needsPass = true;
-  auto passString = std::string{};
-  if (args[0]->type == nix::tNull)
-    needsPass = false;
-  else
-    passString = state.forceStringNoCtx(*args[0], pos);
-
   auto name = state.forceStringNoCtx(*args[1], pos);
 
   auto ctx = nix::PathSet{};
   auto path = state.coerceToPath(pos, *args[2], ctx);
   nix::realiseContext(ctx);
 
-  int pipe_fds[2];
-  filedes fds[4];
-
-  if (pipe(pipe_fds) == -1)
-    throw nix::SysError("creating pipes");
-
-  fds[0] = filedes{pipe_fds[0]};
-  fds[1] = filedes{pipe_fds[1]};
-
-  if (needsPass) {
-    if (pipe(pipe_fds) == -1)
-      throw nix::SysError("creating pipes");
-
-    fds[2] = filedes{pipe_fds[0]};
-    fds[3] = filedes{pipe_fds[1]};
-  }
-
-  fds[0].set_cloexec();
-  fds[1].set_cloexec();
-  if (needsPass)
-    fds[3].set_cloexec();
-
-  auto fourth_arg = needsPass ? std::to_string(static_cast<int>(fds[2])) : "-d";
-
-  const char * argv[] = { "gpg2"
-                        , "--batch"
-                        , needsPass ? "--passphrase-fd" : "--use-agent"
-                        , fourth_arg.c_str()
-                        , needsPass ? "-d" : path.c_str()
-                        , needsPass ? path.c_str() : NULL
-                        , NULL
-                        };
-  switch (fork()) {
-    case -1:
-      throw nix::SysError("forking to run gpg2");
-    case 0:
-      if (dup2(static_cast<int>(fds[1]), STDOUT_FILENO) == -1) {
-        perror("duping pipe to stdout");
-        _exit(213);
-      }
-      /* const-correct because execv swears not to modify argv */
-      execv(GPG, const_cast<char **>(argv));
-      perror("executing gpg");
-      _exit(212);
-  }
-
-  if (needsPass) {
-    nix::writeFull( static_cast<int>(fds[3])
-                  , reinterpret_cast<const unsigned char *>(passString.c_str())
-                  , passString.size()
-                  );
-
-    fds[3] = filedes{};
-  }
-
-  fds[1] = filedes{};
-
-  /* nix has no way to stream a file to the store, so just stuff everything
-   * into a string */
-  auto contents = nix::drainFD(static_cast<int>(fds[0]));
-
-  int status;
-  while(wait(&status) == -1);
-  if (WIFEXITED(status)) {
-    if (WEXITSTATUS(status))
-      throw nix::EvalError(boost::format("gpg2 exited with non-zero exit code %1%")
-          % WEXITSTATUS(status));
-  } else
-    throw nix::EvalError(boost::format("gpg2 killed by signal %1%")
-        % WTERMSIG(status));
-
-  auto res = nix::store->addTextToStore( name
-                                       , contents
-                                       , nix::PathSet{}
-                                       );
+  fprintf (stderr, "Decrypting `%s'\n", path.c_str());
+  auto contents = gpgme_decrypt (path);
+  auto res = nix::store->addTextToStore (name, contents, nix::PathSet{});
 
   nix::mkString(v, res, nix::PathSet{res});
 }
+
