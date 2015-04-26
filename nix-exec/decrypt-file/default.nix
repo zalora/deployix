@@ -1,10 +1,8 @@
 defnix: let
   inherit (defnix.nix-exec) compile-plugin;
+  inherit (defnix.native.pkgs) gnupg;
 
-  inherit (defnix.native.pkgs) gpgme libgpgerror;
 in compile-plugin [
-  "-I${gpgme}/include"
-  "-I${libgpgerror}/include"
-  "${gpgme}/lib/libgpgme.so"
+  ''-DGPG2_PATH="${gnupg}/bin/gpg2"''
   ]
   ./decrypt-file.so.cc "decrypt" 3

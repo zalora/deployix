@@ -1,4 +1,4 @@
-lib: let
+lspawnib: let
   inherit (lib) nix-exec;
 
   inherit (nix-exec) sequence-attrs;
@@ -59,10 +59,6 @@ in lib.nix-exec.map (sets: (inherit-pkgs {
   boehmgc = sets.nixpkgs-986dfe1;
 
   gnupg = sets.nixpkgs-986dfe1;
-
-  gpgme = sets.nixpkgs-986dfe1;
-
-  libgpgerror = sets.nixpkgs-986dfe1;
 
   openssh = sets.nixpkgs-986dfe1;
 

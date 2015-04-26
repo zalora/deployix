@@ -1,6 +1,12 @@
-#include <errno.h>
-#include <stdio.h>
+#include <spawn.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
 
+#include <cerrno>
+#include <cstring>
+#include <iostream>
+#include <sstream>
 #include <string>
 
 #include <eval-inline.hh>
@@ -8,67 +14,74 @@
 #include <store-api.hh>
 #include <util.hh>
 
-#include <gpgme.h>
-
-static inline void
-fail_if_err (const gpgme_error_t & err)
-{
-  if (err)
-    {
-      fprintf (stderr, "%s:%d: %s: %s\n",
-               __FILE__, __LINE__, gpgme_strsource (err),
-               gpgme_strerror (err));
-      exit (EXIT_FAILURE);
-    }
-}
+#ifndef GPG2_PATH
+# define GPG2_PATH "gpg2"
+#endif
 
 static std::string
-gpgme_decrypt (const std::string &path)
+__decrypt (const std::string &path)
 {
-  gpgme_ctx_t ctx;
-  gpgme_error_t err;
-  gpgme_data_t in, out;
-  gpgme_decrypt_result_t result;
-  std::string res;
-  int ret;
+  const char gpg2_path [] = GPG2_PATH;
+  const char * const argv[] = { gpg2_path
+                              , "--batch"
+                              , "--use-agent"
+                              , "-d"
+                              , path.c_str()
+                              , nullptr
+                              };
+  int in[2];
+  int status;
+  short int flags = 0;
+  pid_t child;
+  posix_spawn_file_actions_t action;
+  posix_spawnattr_t attr;
 
-  const size_t BUF_SIZE = 512;
-  char buf[BUF_SIZE + 1];
+  pipe(in);
+  posix_spawn_file_actions_init(&action);
+  posix_spawnattr_init(&attr);
+  posix_spawn_file_actions_adddup2(&action, in[1], 1);
+  posix_spawn_file_actions_addclose(&action, in[0]);
 
-  gpgme_check_version (NULL);
-  err = gpgme_new (&ctx);
-  fail_if_err (err);
+#if defined(POSIX_SPAWN_USEVFORK)
+  flags |= POSIX_SPAWN_USEVFORK;
+#endif
+  posix_spawnattr_setflags(&attr, flags);
 
-  err = gpgme_data_new_from_file (&in, path.c_str(), 1);
-  fail_if_err (err);
+  status = posix_spawnp(&child, gpg2_path, &action, &attr,
+      const_cast<char * const *>(argv), environ);
 
-  err = gpgme_data_new (&out);
-  fail_if_err (err);
+  close(in[1]);
+  posix_spawn_file_actions_destroy(&action);
+  posix_spawnattr_destroy(&attr);
 
-  err = gpgme_op_decrypt (ctx, in, out);
-  fail_if_err (err);
+  errno = status;
+  if (status)
+    throw nix::SysError("posix_spawnp");
 
-  result = gpgme_op_decrypt_result (ctx);
-  if (result->unsupported_algorithm)
-    {
-      fprintf (stderr, "%s:%i: unsupported algorithm: %s\n",
-               __FILE__, __LINE__, result->unsupported_algorithm);
-      exit (EXIT_FAILURE);
+  std::string ret = nix::drainFD(in[0]);
+
+  errno = 0;
+  while (waitpid(child, &status, 0) == -1 && errno == EINTR)
+    ;
+  if (errno && errno != EINTR)
+    throw nix::SysError("waiting for gpg2");
+
+  if (WIFEXITED(status)) {
+    auto code = WEXITSTATUS(status);
+    if (code) {
+      std::ostringstream msg;
+      msg << "gpg2 exited with non-zero exit code " << code;
+      throw nix::Error(msg.str());
     }
+  } else if (WIFSIGNALED(status)) {
+    std::ostringstream msg;
+    msg << "gpg2 killed by signal " << strsignal(WTERMSIG(status));
+    throw nix::Error(msg.str());
+  } else {
+    throw nix::Error("gpg2 died in unknown manner");
+  }
 
-  ret = gpgme_data_seek (out, 0, SEEK_SET);
-  if (ret)
-    fail_if_err (gpgme_err_code_from_errno (errno));
-  while ((ret = gpgme_data_read (out, buf, BUF_SIZE)) > 0)
-    res.append (buf, ret);
-  if (ret < 0)
-    fail_if_err (gpgme_err_code_from_errno (errno));
-
-  gpgme_data_release (in);
-  gpgme_data_release (out);
-  gpgme_release (ctx);
-
-  return (res);
+  return ret;
 }
 
 
@@ -86,8 +99,8 @@ extern "C" void decrypt( nix::EvalState & state
   auto path = state.coerceToPath(pos, *args[2], ctx);
   nix::realiseContext(ctx);
 
-  fprintf (stderr, "Decrypting `%s'\n", path.c_str());
-  auto contents = gpgme_decrypt (path);
+  std::cerr << "decrypting `" << path << "' ..." << std::endl;
+  auto contents = __decrypt (path);
   auto res = nix::store->addTextToStore (name, contents, nix::PathSet{});
 
   nix::mkString(v, res, nix::PathSet{res});
