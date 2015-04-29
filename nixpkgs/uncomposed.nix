@@ -1,4 +1,4 @@
-lspawnib: let
+lib: let
   inherit (lib) nix-exec;
 
   inherit (nix-exec) sequence-attrs;
