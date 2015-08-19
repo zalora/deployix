@@ -26,6 +26,9 @@ lib: let
 
     nixpkgs-a2c1414 =
       make-upstream-nixpkgs-set "a2c14143e91bb76c69652b9a0bda15aca2b7fc62";
+
+    nixpkgs-fabeee7 =
+      make-upstream-nixpkgs-set "fabeee76bd1c2795933e5012c35cb4799ea18ef4";
   };
 
   haskellPackages = pkgs-fun: system: (pkgs-fun system).haskellPackages;
@@ -54,7 +57,7 @@ in lib.nix-exec.map (sets: (inherit-pkgs {
 
   binutils = sets.nixpkgs-986dfe1;
 
-  nix = sets.nixpkgs-986dfe1;
+  nixUnstable =  sets.nixpkgs-fabeee7;
 
   boehmgc = sets.nixpkgs-986dfe1;
 
