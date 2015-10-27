@@ -20,13 +20,15 @@ extern "C" void nix_exec( nix::EvalState & state
 
   state.forceList(*args[1], pos);
   auto argv_list = nix::Strings();
+  auto value_list_length = args[1]->listSize();
   auto argv_ptr =
-    std::unique_ptr<const char*[]>{new const char*[args[1]->list.length + 2]};
+    std::unique_ptr<const char*[]>{new const char*[value_list_length + 2]};
   argv_ptr[0] = file;
-  argv_ptr[args[1]->list.length + 1] = nullptr;
-  for (size_t i = 0; i < args[1]->list.length; ++i) {
+  argv_ptr[value_list_length + 1] = nullptr;
+  auto value_list = args[1]->listElems();
+  for (size_t i = 0; i < value_list_length; ++i) {
     argv_list.push_back(state.coerceToString( pos
-                                            , *args[1]->list.elems[i]
+                                            , *value_list[i]
                                             , ctx
                                             , true
                                             , false

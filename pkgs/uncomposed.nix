@@ -21,7 +21,7 @@ lib: (lib.recursive-import ./.) // {
   nginx = defnix: defnix.nixpkgs.nginx;
 
   # The nix package manager
-  nix = defnix: defnix.nixpkgs.nix;
+  nix = defnix: defnix.nixpkgs.nixUnstable;
 
   # The boehm garbage collector
   boehmgc = defnix: defnix.nixpkgs.boehmgc;
