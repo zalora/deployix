@@ -1,7 +1,7 @@
-defnix: let
-  inherit (defnix.pkgs) coreutils;
+deployix: let
+  inherit (deployix.pkgs) coreutils;
 
-  inherit (defnix.build-support) ghc run-script;
+  inherit (deployix.build-support) ghc run-script;
 
   fakeSendmailScript = builtins.toFile "fakeSendmailScript.hs" ''
     import Prelude hiding (log)

@@ -1,32 +1,32 @@
 lib: (lib.recursive-import ./.) // {
   # C compiler
-  cc = defnix: "${defnix.nixpkgs.gcc}/bin/cc";
+  cc = deployix: "${deployix.nixpkgs.gcc}/bin/cc";
 
   # C++ compiler
-  cxx = defnix: "${defnix.nixpkgs.gcc}/bin/c++";
+  cxx = deployix: "${deployix.nixpkgs.gcc}/bin/c++";
 
-  libcxx = defnix: defnix.nixpkgs.libcxx;
+  libcxx = deployix: deployix.nixpkgs.libcxx;
 
   # Utility to modify the dynamic linker and RPATH of elf executables
   # See http://nixos.org/patchelf.html
-  patchelf = defnix: defnix.nixpkgs.patchelf;
+  patchelf = deployix: deployix.nixpkgs.patchelf;
 
   # Binary utilities
-  binutils = defnix: defnix.nixpkgs.binutils;
+  binutils = deployix: deployix.nixpkgs.binutils;
 
   # Haskell compiler
-  ghc = defnix: "${defnix.nixpkgs.haskellPackages.ghcPlain}/bin/ghc";
+  ghc = deployix: "${deployix.nixpkgs.haskellPackages.ghcPlain}/bin/ghc";
 
   # The Stream EDitor
-  sed = defnix: "${defnix.nixpkgs.gnused}/bin/sed";
+  sed = deployix: "${deployix.nixpkgs.gnused}/bin/sed";
 
   # Run a series of tests
-  write-test-script = defnix: let
-    inherit (defnix.pkgs) sh;
+  write-test-script = deployix: let
+    inherit (deployix.pkgs) sh;
 
-    inherit (defnix.build-support) write-script;
+    inherit (deployix.build-support) write-script;
 
-    inherit (defnix.lib) join map-attrs-to-list;
+    inherit (deployix.lib) join map-attrs-to-list;
   in tests: write-script "tests" ''
     #!${sh} -e
 

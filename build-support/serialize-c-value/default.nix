@@ -1,11 +1,11 @@
-defnix:
+deployix:
 
 { name, header ? null, type, value, flags ? [] }:  let
-  inherit (defnix.lib) join map-attrs-to-list imap;
+  inherit (deployix.lib) join map-attrs-to-list imap;
 
-  inherit (defnix.config) system;
+  inherit (deployix.config) system;
 
-  inherit (defnix.build-support) write-file compile-c;
+  inherit (deployix.build-support) write-file compile-c;
 
   value-to-assignment = value: let type = builtins.typeOf value; in
     if (value.type or null) == "derivation" || type == "path"
@@ -22,7 +22,7 @@ defnix:
       then "${toString value}L"
     else value;
 
-  c = defnix.build-support.write-file "write-${name}.c" ''
+  c = deployix.build-support.write-file "write-${name}.c" ''
     #define _GNU_SOURCE
     #include <unistd.h>
     #include <err.h>

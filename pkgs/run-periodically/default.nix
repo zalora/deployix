@@ -1,9 +1,9 @@
-defnix:
+deployix:
 
 { name, prog, hour, min, state-file }:let
-  inherit (defnix.build-support) compile-c serialize-c-value;
+  inherit (deployix.build-support) compile-c serialize-c-value;
 
-  inherit (defnix.pkgs) execve;
+  inherit (deployix.pkgs) execve;
 
   run-periodically = compile-c [] ./run-periodically.c;
 

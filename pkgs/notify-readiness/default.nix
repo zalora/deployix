@@ -1,3 +1,3 @@
-defnix:
+deployix:
 
-defnix.build-support.compile-c [] ./notify-readiness.c
+deployix.build-support.compile-c [] ./notify-readiness.c

@@ -1,52 +1,52 @@
 lib: (lib.recursive-import ./.) // {
   # Core POSIX utilities
-  coreutils = defnix: defnix.nixpkgs.coreutils;
+  coreutils = deployix: deployix.nixpkgs.coreutils;
 
   # A POSIX shell
-  sh = defnix: "${defnix.nixpkgs.bash}/bin/bash";
+  sh = deployix: "${deployix.nixpkgs.bash}/bin/bash";
 
   # The strongswan IKEv2 daemon
-  strongswan = defnix: defnix.nixpkgs.strongswan;
+  strongswan = deployix: deployix.nixpkgs.strongswan;
 
   # Linux kernel module tools
-  kmod = defnix: defnix.nixpkgs.kmod;
+  kmod = deployix: deployix.nixpkgs.kmod;
 
   # Open source toolkit for SSL/TLS
-  openssl = defnix: defnix.nixpkgs.openssl;
+  openssl = deployix: deployix.nixpkgs.openssl;
 
   # The PHP hypertext processor
-  php = defnix: defnix.nixpkgs.php;
+  php = deployix: deployix.nixpkgs.php;
 
   # The nginx web server
-  nginx = defnix: defnix.nixpkgs.nginx;
+  nginx = deployix: deployix.nixpkgs.nginx;
 
   # The nix package manager
-  nix = defnix: defnix.nixpkgs.nixUnstable;
+  nix = deployix: deployix.nixpkgs.nixUnstable;
 
   # The boehm garbage collector
-  boehmgc = defnix: defnix.nixpkgs.boehmgc;
+  boehmgc = deployix: deployix.nixpkgs.boehmgc;
 
   # The GNU privacy guard
-  gnupg = defnix: defnix.nixpkgs.gnupg;
+  gnupg = deployix: deployix.nixpkgs.gnupg;
 
   # The openssh SSH suite
-  openssh = defnix: defnix.nixpkgs.openssh;
+  openssh = deployix: deployix.nixpkgs.openssh;
 
   # GNU Diff
-  diffutils = defnix: defnix.nixpkgs.diffutils;
+  diffutils = deployix: deployix.nixpkgs.diffutils;
 
   # systemd init system
-  systemd = defnix: defnix.nixpkgs.systemd;
+  systemd = deployix: deployix.nixpkgs.systemd;
 
   # GNU grep
-  gnugrep = defnix: defnix.nixpkgs.gnugrep;
+  gnugrep = deployix: deployix.nixpkgs.gnugrep;
 
   # The newrelic system monitoring daemon
-  newrelic-sysmond = defnix: defnix.nixpkgs.newrelic-sysmond;
+  newrelic-sysmond = deployix: deployix.nixpkgs.newrelic-sysmond;
 
   # Interactive version of bash
-  bash-interactive = defnix: "${defnix.nixpkgs.bashInteractive}/bin/bash";
+  bash-interactive = deployix: "${deployix.nixpkgs.bashInteractive}/bin/bash";
 
   # Misc linux utilities
-  utillinux = defnix: defnix.nixpkgs.utillinux;
+  utillinux = deployix: deployix.nixpkgs.utillinux;
 }

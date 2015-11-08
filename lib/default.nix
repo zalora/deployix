@@ -49,7 +49,7 @@ nix-exec-lib: let
     all = pred: lib.fold (elem: acc: (pred elem) && acc) true;
 
     # Encapsulate the readDir builtin so we can throw a nice error message.
-    readDir = builtins.readDir or (throw "defnix requires a nix version >= 1.8pre3843_3f8576a");
+    readDir = builtins.readDir or (throw "deployix requires a nix version >= 1.8pre3843_3f8576a");
 
     # Recursively import a directory. Directory names are used as attr names,
     # values are set to either:
@@ -57,7 +57,7 @@ nix-exec-lib: let
     #   b) import dir/uncomposed.nix lib
     #   c) recursive-import dir
     # depending on whether default.nix or uncomposed.nix exist in the directory.
-    # See <defnix/README.md> for some explanation of this behavior
+    # See <deployix/README.md> for some explanation of this behavior
     recursive-import = dir: let
       dirents = lib.readDir dir;
 

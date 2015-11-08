@@ -21,4 +21,4 @@ A monadic value that, when run, decrypts the files in `secrets-dir` if requested
 and produces a set mapping filenames to secret paths.
 
 Uses `decrypt-file` under the hood, and thus has the same limitation (see
-`<defnix/nix-exec/decrypt-file/README.md>`).
+`<deployix/nix-exec/decrypt-file/README.md>`).

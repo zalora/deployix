@@ -1,10 +1,10 @@
-defnix: let
-  inherit (defnix.build-support) write-script run-script;
+deployix: let
+  inherit (deployix.build-support) write-script run-script;
 
-  inherit (defnix.pkgs) sh coreutils systemd gnugrep nix diffutils
+  inherit (deployix.pkgs) sh coreutils systemd gnugrep nix diffutils
     notify-readiness run-with-settings;
 
-  inherit (defnix.lib) join map-attrs-to-list hashless-basename;
+  inherit (deployix.lib) join map-attrs-to-list hashless-basename;
 
   activate = write-script "defnixos-systemd-activate" ''
     #!${sh} -e

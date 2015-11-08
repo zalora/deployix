@@ -1,18 +1,18 @@
-defnix:
+deployix:
 
 { port ? 80 # Port to listen on
 , config # Configuration file, should only listen on [::]:${port} with ipv6only=off
 , prefix ? "/var/lib/nginx"  # nginx prefix (temp files etc. live here by default)
 , log-dir ? "/var/log/nginx" # nginx default log dir
 }: let
-  inherit (defnix.build-support) write-script;
+  inherit (deployix.build-support) write-script;
 
-  inherit (defnix.defnixos.activations) socket;
+  inherit (deployix.defnixos.activations) socket;
 
-  inherit (defnix.pkgs) multiplex-activations execve nginx sh;
+  inherit (deployix.pkgs) multiplex-activations execve nginx sh;
 in {
   start = multiplex-activations [ (socket {
-    family = defnix.lib.socket-address-families.AF_INET6;
+    family = deployix.lib.socket-address-families.AF_INET6;
 
     inherit port;
   }) ] (execve "start-nginx-${toString port}" {

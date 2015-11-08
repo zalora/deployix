@@ -1,6 +1,6 @@
-defnix: let
-  inherit (defnix.nix-exec) compile-plugin;
-  inherit (defnix.native.pkgs) gnupg;
+deployix: let
+  inherit (deployix.nix-exec) compile-plugin;
+  inherit (deployix.native.pkgs) gnupg;
 
 in compile-plugin [
   ''-DGPG2_PATH="${gnupg}/bin/gpg2"''

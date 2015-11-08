@@ -37,7 +37,7 @@ string, you must pass something like `"\"foo\""`, *not* `"foo"`.
 Reusing type definitions in single file programs
 -------------------------------------------------
 
-Many programs in `defnix` are defined in single self-contained source files.
+Many programs in `deployix` are defined in single self-contained source files.
 To facilitate code reuse, `serialize-c-value` defines the `DEFNIX_TYPES_ONLY`
 macro before including `header` so that these files can be used as `include`
 without their definitions (particularly of `main`) conflicting.
@@ -45,7 +45,7 @@ without their definitions (particularly of `main`) conflicting.
 Example
 --------
 
-See `<defnix/defnixos/activations/socket/default.nix>` for an example of
+See `<deployix/defnixos/activations/socket/default.nix>` for an example of
 invoking `serialize-c-value`, and see
-`<defnix/pkgs/multiplex-activations/multiplex-activations.c>` for how the
+`<deployix/pkgs/multiplex-activations/multiplex-activations.c>` for how the
 generated files can be used.

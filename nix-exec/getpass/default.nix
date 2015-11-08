@@ -1,1 +1,1 @@
-defnix: defnix.nix-exec.compile-plugin [] ./getpass.so.cc "nix_getpass" 1
+deployix: deployix.nix-exec.compile-plugin [] ./getpass.so.cc "nix_getpass" 1

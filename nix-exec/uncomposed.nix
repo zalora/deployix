@@ -1,6 +1,6 @@
 lib: (lib.recursive-import ./.) // {
   # Spawn a program, throwing if it fails
-  spawn-successful = defnix: prog: argv: lib.nix-exec.map ({ signalled, code }:
+  spawn-successful = deployix: prog: argv: lib.nix-exec.map ({ signalled, code }:
     if signalled
       then throw "${prog} killed by signal ${toString code}"
     else if code != 0
@@ -8,5 +8,5 @@ lib: (lib.recursive-import ./.) // {
         toString code
       }"
       else null
-  ) (defnix.nix-exec.spawn prog argv);
+  ) (deployix.nix-exec.spawn prog argv);
 }

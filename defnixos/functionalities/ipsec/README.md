@@ -17,7 +17,7 @@ Custom functionalities attributes
 
 * `outgoing-hosts`: A set of hosts to enable outgoing secure connections to
 
-See `<defnix/defnixos/services/strongswan/README.md>` for more details.
+See `<deployix/defnixos/services/strongswan/README.md>` for more details.
 
 Return
 -------

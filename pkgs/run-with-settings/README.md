@@ -9,7 +9,7 @@ Arguments
 
 * `prog`: The program to wrap
 * `settings`: The execution environment settings. See the
-  `<defnix/pkgs/execve/README.md>` `settings` argument for details.
+  `<deployix/pkgs/execve/README.md>` `settings` argument for details.
 
 Specialization
 ---------------
@@ -20,4 +20,4 @@ packages may need different behavior for efficiency or proper semantics. To do
 so, the package should have a `run-with-settings` attribute that takes the
 `settings` argument and returns the appropriately-modified program. For
 example, see the run-with-settings section of
-`<defnix/pkgs/multiplex-activations/README.md>`.
+`<deployix/pkgs/multiplex-activations/README.md>`.

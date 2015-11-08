@@ -1,9 +1,9 @@
-defnix: let
-  inherit (defnix.native.build-support) write-script;
+deployix: let
+  inherit (deployix.native.build-support) write-script;
 
-  inherit (defnix.native.pkgs) sh;
+  inherit (deployix.native.pkgs) sh;
 
-  inherit (defnix.lib) join fold map-attrs-to-list;
+  inherit (deployix.lib) join fold map-attrs-to-list;
 
   defer = pkg: ({ context, string }:
     fold (ctx: acc: let
@@ -18,13 +18,13 @@ defnix: let
         then "(builtins.storePath ${ctx.path})"
         else throw "Unknown context string ${ctx.path}";
     in "((builtins.substring 0 0 ${ctxstr}) + ${acc})") ''"${string}"'' context
-  ) (defnix.eval-support.extract-context pkg);
+  ) (deployix.eval-support.extract-context pkg);
 
-  deferred-notify-readiness = defer defnix.pkgs.notify-readiness;
+  deferred-notify-readiness = defer deployix.pkgs.notify-readiness;
 
   on-demand-svc-strings = indent: name: service: let
-    listen-run = defnix.build-support.write-script "${name}-listen" ''
-      #!${defnix.pkgs.sh} -e
+    listen-run = deployix.build-support.write-script "${name}-listen" ''
+      #!${deployix.pkgs.sh} -e
       ${toString service.initializer or ""}
       mkdir -p /run/defnixos-services/${name}
       cd /run/defnixos-services/${name}
@@ -85,7 +85,7 @@ defnix: let
     (if service.on-demand or false
       then on-demand-svc-strings
       else regular-svc-strings) indent name service;
-in functionalities: defnix.native.build-support.write-file "machine.nix" ''
+in functionalities: deployix.native.build-support.write-file "machine.nix" ''
   { ... }:
   {
     config.systemd.services = {

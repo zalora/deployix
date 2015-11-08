@@ -1,11 +1,11 @@
-defnix:
+deployix:
 
 name: let
-  inherit (defnix.lib) join map-attrs-to-list restart-modes;
+  inherit (deployix.lib) join map-attrs-to-list restart-modes;
 
-  inherit (defnix.eval-support) calculate-id;
+  inherit (deployix.eval-support) calculate-id;
 
-  inherit (defnix.build-support) compile-c write-file;
+  inherit (deployix.build-support) compile-c write-file;
 
   self = args@{ filename, argv, envp ? null, settings ? {} }: let
     user = settings.user or null;
