@@ -1,5 +1,5 @@
-defnix: let
-  inherit (defnix) lib;
+deployix: let
+  inherit (deployix) lib;
   inherit (lib) map-attrs nix-exec;
   inherit (nix-exec) sequence-attrs;
   inherit (nix-exec.builtins) fetchgit;

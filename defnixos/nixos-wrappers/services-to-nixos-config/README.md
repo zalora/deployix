@@ -7,7 +7,7 @@ Arguments
 ----------
 
 * `services`: A set of services (as defined in
-  `<defnix/defnixos/services/README.md>`)
+  `<deployix/defnixos/services/README.md>`)
 
 Return
 ------
@@ -20,5 +20,5 @@ target it pulls in all on-demand services.
 Example
 -------
 
-See `<defnix/defnixos/nixos-wrappers/ipsec-wrapper.nix>` for an example
+See `<deployix/defnixos/nixos-wrappers/ipsec-wrapper.nix>` for an example
 of how this is used.

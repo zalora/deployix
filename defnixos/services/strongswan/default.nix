@@ -1,7 +1,7 @@
-defnix:
+deployix:
 
 let
-  inherit (defnix.pkgs) strongswan kmod execve generate-certs;
+  inherit (deployix.pkgs) strongswan kmod execve generate-certs;
 
   secrets-file = service-name: cert-archive: builtins.toFile "ipsec.secrets"
     ": P12 ${cert-archive} \"fakepass\"";
@@ -12,7 +12,7 @@ let
       leftid=it-services@zalora.com
       type=transport
       auto=add
-    ${defnix.lib.join "" (defnix.lib.imap (idx: host: ''
+    ${deployix.lib.join "" (deployix.lib.imap (idx: host: ''
       conn outbound-${toString idx}
         leftid=it-services@zalora.com
         right=${host}

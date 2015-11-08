@@ -1,5 +1,5 @@
-defnix: let
-  inherit (defnix.pkgs) newrelic-sysmond execve coreutils;
+deployix: let
+  inherit (deployix.pkgs) newrelic-sysmond execve coreutils;
 in { config, log-dir ? "/var/log/newrelic" }: {
   start = execve "nrsysmond-exec" {
     filename = "${newrelic-sysmond}/bin/nrsysmond";

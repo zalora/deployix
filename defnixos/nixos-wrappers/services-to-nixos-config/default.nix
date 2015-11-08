@@ -1,9 +1,9 @@
-defnix:
+deployix:
 
 services: let
-  inherit (defnix.build-support) write-script;
+  inherit (deployix.build-support) write-script;
 
-  inherit (defnix.pkgs) coreutils sh notify-readiness;
+  inherit (deployix.pkgs) coreutils sh notify-readiness;
 
   make-regular-systemd-service = name: { start, initializer }: let
     run = ''
@@ -74,7 +74,7 @@ services: let
         else [ (make-regular-systemd-service name service-config) ];
 in {
   systemd.services = builtins.listToAttrs (builtins.concatLists (
-    defnix.lib.map-attrs-to-list make-systemd-services services
+    deployix.lib.map-attrs-to-list make-systemd-services services
   ));
 
   systemd.targets = {

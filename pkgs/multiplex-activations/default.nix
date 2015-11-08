@@ -1,11 +1,11 @@
-defnix:
+deployix:
 
 activations: assert activations != []; let
-  inherit (defnix.build-support) compile-c;
+  inherit (deployix.build-support) compile-c;
 
-  inherit (defnix.pkgs) execve run-with-settings;
+  inherit (deployix.pkgs) execve run-with-settings;
 
-  inherit (defnix.defnixos.activations) activation-header;
+  inherit (deployix.defnixos.activations) activation-header;
 
   multiplex-activations = compile-c [
     "-ldl"

@@ -15,7 +15,7 @@
 
   unsafe-perform-io = import (nix-exec + "/share/nix/unsafe-perform-io.nix");
 
-  defnix = unsafe-perform-io (import ../../. nix-exec-lib { config.system = pkgs.system; });
+  deployix = unsafe-perform-io (import ../../. nix-exec-lib { config.system = pkgs.system; });
 
   inherit (lib) types mkOption mapAttrsToList;
 
@@ -27,7 +27,7 @@ in {
     defnixos.strongswan-service = mkOption {
       description = "An already-composed strongswan defnixos service function";
 
-      default = cfg.defnix.defnixos.services.strongswan;
+      default = cfg.deployix.defnixos.services.strongswan;
 
       type = types.uniq types.unspecified;
     };
@@ -35,7 +35,7 @@ in {
     defnixos.services-to-nixos-config = mkOption {
       description = "An already-composed services-to-nixos-config defnixos library function";
 
-      default = cfg.defnix.defnixos.nixos-wrappers.services-to-nixos-config;
+      default = cfg.deployix.defnixos.nixos-wrappers.services-to-nixos-config;
 
       type = types.uniq types.unspecified;
     };
@@ -78,12 +78,12 @@ in {
       description = "Defnixos services to run on the machine.";
     };
 
-    defnixos.defnix = mkOption {
-      default = defnix;
+    defnixos.deployix = mkOption {
+      default = deployix;
 
       type = types.uniq types.attrs;
 
-      description = "The composed defnix set to use.";
+      description = "The composed deployix set to use.";
     };
   };
 
@@ -92,7 +92,7 @@ in {
 
     users.extraUsers = builtins.listToAttrs (map (name: {
       inherit name;
-      value.uid = cfg.defnix.eval-support.calculate-id name;
+      value.uid = cfg.deployix.eval-support.calculate-id name;
     }) cfg.users);
   };
 }

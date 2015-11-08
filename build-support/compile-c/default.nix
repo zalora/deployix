@@ -1,11 +1,11 @@
-defnix:
+deployix:
 
 flags: c: let
-  inherit (defnix.build-support) output-to-argument cc patchelf binutils;
+  inherit (deployix.build-support) output-to-argument cc patchelf binutils;
 
-  inherit (defnix.pkgs) coreutils;
+  inherit (deployix.pkgs) coreutils;
 
-  inherit (defnix.config) system;
+  inherit (deployix.config) system;
 
   base = c.name or (baseNameOf (toString c));
 

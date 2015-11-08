@@ -1,1 +1,1 @@
-defnix: ./activation-header.h
+deployix: ./activation-header.h

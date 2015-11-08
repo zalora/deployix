@@ -1,11 +1,11 @@
-defnix:
+deployix:
 
 addr: let
-  inherit (defnix.build-support) compile-c serialize-c-value;
+  inherit (deployix.build-support) compile-c serialize-c-value;
 
-  inherit (defnix.lib) socket-address-families;
+  inherit (deployix.lib) socket-address-families;
 
-  inherit (defnix.defnixos.activations) activation-header;
+  inherit (deployix.defnixos.activations) activation-header;
 
   inherit (addr) family;
 

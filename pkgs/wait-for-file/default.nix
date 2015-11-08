@@ -1,3 +1,3 @@
-defnix:
+deployix:
 
-defnix.build-support.compile-c [] ./wait-for-file.c
+deployix.build-support.compile-c [] ./wait-for-file.c

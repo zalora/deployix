@@ -33,8 +33,8 @@ lib: let
 
   haskellPackages = pkgs-fun: system: (pkgs-fun system).haskellPackages;
 
-  inherit-pkgs = lib.map-attrs (pkg: pkgs-fun: defnix:
-    (pkgs-fun defnix.config.system).${pkg}
+  inherit-pkgs = lib.map-attrs (pkg: pkgs-fun: deployix:
+    (pkgs-fun deployix.config.system).${pkg}
   );
 in lib.nix-exec.map (sets: (inherit-pkgs {
   gcc = sets.nixpkgs-986dfe1;

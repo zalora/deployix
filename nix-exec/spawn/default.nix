@@ -1,1 +1,1 @@
-defnix: defnix.nix-exec.compile-plugin [] ./spawn.so.cc "nix_spawn" 2
+deployix: deployix.nix-exec.compile-plugin [] ./spawn.so.cc "nix_spawn" 2

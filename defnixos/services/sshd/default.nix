@@ -1,11 +1,11 @@
-defnix: let
-  inherit (defnix.pkgs) multiplex-activations emulate-inetd execve openssh;
+deployix: let
+  inherit (deployix.pkgs) multiplex-activations emulate-inetd execve openssh;
 
   sshd = "${openssh}/sbin/sshd";
 
-  inherit (defnix.defnixos.activations) socket;
+  inherit (deployix.defnixos.activations) socket;
 
-  inherit (defnix.lib.socket-address-families) AF_INET6;
+  inherit (deployix.lib.socket-address-families) AF_INET6;
 in { passwd, group, sudoers, port, config }: {
   start = multiplex-activations [
     (socket { family = AF_INET6; inherit port; })

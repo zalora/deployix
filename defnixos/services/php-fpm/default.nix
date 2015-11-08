@@ -1,7 +1,7 @@
-defnix: let
-  inherit (defnix.defnixos.activations) socket;
+deployix: let
+  inherit (deployix.defnixos.activations) socket;
 
-  inherit (defnix.pkgs) multiplex-activations execve php;
+  inherit (deployix.pkgs) multiplex-activations execve php;
 in
 
 { socket-path # The path to the fpm socket
@@ -11,7 +11,7 @@ in
 
 {
   start = multiplex-activations [ (socket {
-    family = defnix.lib.socket-address-families.AF_UNIX;
+    family = deployix.lib.socket-address-families.AF_UNIX;
 
     path = socket-path;
   }) ] (execve "start-php-fpm" {

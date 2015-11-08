@@ -1,5 +1,5 @@
-defnix: functionalities: let
-  inherit (defnix.lib) map-attrs-to-list;
+deployix: functionalities: let
+  inherit (deployix.lib) map-attrs-to-list;
 
   get-attr-if-all-same = attr: let
     vals = builtins.concatLists (map-attrs-to-list (name: value:
@@ -9,7 +9,7 @@ defnix: functionalities: let
     val-head = builtins.head vals;
   in if builtins.length vals == 0
     then throw "No functionalities have a value for ${attr}"
-  else if defnix.lib.all (v: v == val-head) vals
+  else if deployix.lib.all (v: v == val-head) vals
     then val-head
     else throw "Deployments of functionalities with mixed ${attr} values not yet supported";
 
@@ -17,9 +17,9 @@ defnix: functionalities: let
 
   test-command = get-attr-if-all-same "unit-test-command";
 
-  inherit (defnix.defnixos.functionalities) generate-nixos-config;
+  inherit (deployix.defnixos.functionalities) generate-nixos-config;
 in (import "${toString nixpkgs}/nixos/lib/testing.nix" {
-    inherit (defnix.config) system;
+    inherit (deployix.config) system;
   }).simpleTest {
     testScript = ''
       startAll;
